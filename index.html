@@ -1,0 +1,796 @@
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TUB · Rede em Movimento · Dashboard unificada</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+:root{--navy:#07506a;--navy2:#063f58;--blue:#0d85b5;--cyan:#16a5c6;--red:#ef3f36;--green:#0aa968;--bg:#eef4f6;--card:#fff;--ink:#0d2740;--muted:#6b8292;--line:#d9e5eb;--soft:#f6f9fb;--shadow:0 8px 26px rgba(7,54,74,.08)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:14px/1.35 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}button,input,select{font:inherit}.hidden{display:none!important}
+.topbar{height:108px;color:white;position:relative;overflow:hidden;background:linear-gradient(90deg,#063f55 0%,#075c78 46%,#06465f 100%)}
+.topbar:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(3,47,65,.97) 0%,rgba(4,67,88,.82) 30%,rgba(5,83,108,.28) 56%,rgba(3,58,79,.72) 82%,rgba(3,48,67,.93) 100%)}
+.topbar:after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:rgba(255,255,255,.13);z-index:2}
+.topinner{position:relative;z-index:5;max-width:1536px;height:100%;margin:auto;padding:0 34px;display:flex;align-items:center;justify-content:space-between}
+.brandText{position:relative;z-index:5}.brandText h1{margin:0;font-size:28px;letter-spacing:-.025em}.brandText p{margin:4px 0 0;font-size:14px;color:#d4e7ee}
+.headerMeta{position:relative;z-index:5;display:flex;align-items:center;gap:28px}.headerTagline{max-width:150px;text-align:right;font-size:12px;line-height:1.25;color:#d9edf3;font-weight:700}.headerDate{padding-left:24px;border-left:1px solid rgba(255,255,255,.35);text-align:right}.headerDate span{display:block;font-size:11px;color:#d8e8ee}.headerDate b{display:block;font-size:22px;line-height:1.15;margin-top:2px}
+
+/* Banner art: entirely HTML/CSS, intentionally subtle like the approved mockup */
+.bannerArt{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bannerGlow{position:absolute;left:30%;right:18%;top:-32px;height:150px;background:radial-gradient(ellipse at 58% 72%,rgba(28,148,180,.24),rgba(7,89,116,.07) 47%,transparent 72%)}
+.bannerRoad{position:absolute;left:28%;right:15%;bottom:-16px;height:50px;border-top:2px solid rgba(170,226,239,.09);transform:skewY(-2.4deg);opacity:.85}
+.bannerRoad:after{content:"";position:absolute;left:16%;right:5%;top:9px;border-top:1px dashed rgba(194,235,244,.08)}
+.bannerCity{position:absolute;left:31%;right:21%;bottom:0;height:72px;opacity:.42}
+.bannerCity .b{position:absolute;bottom:0;background:linear-gradient(180deg,rgba(1,43,60,.22),rgba(1,35,51,.72));border-top:1px solid rgba(159,220,234,.07)}
+.bannerCity .b:after{content:"";position:absolute;inset:8px 5px auto 5px;height:26px;background:repeating-linear-gradient(90deg,rgba(130,202,220,.07) 0 3px,transparent 3px 10px)}
+.bannerCity .b1{left:0;width:42px;height:39px}.bannerCity .b2{left:46px;width:28px;height:55px}.bannerCity .b3{left:79px;width:53px;height:34px}.bannerCity .b4{left:137px;width:34px;height:64px}.bannerCity .b5{left:176px;width:66px;height:46px}.bannerCity .b6{left:248px;width:31px;height:58px}.bannerCity .b7{left:286px;width:56px;height:38px}.bannerCity .b8{left:349px;width:40px;height:51px}.bannerCity .b9{left:397px;width:70px;height:43px}.bannerCity .b10{left:474px;width:35px;height:61px}
+.bannerTower{position:absolute;left:45%;bottom:26px;width:9px;height:47px;background:rgba(1,40,57,.56);opacity:.6}
+.bannerTower:before{content:"";position:absolute;left:-4px;top:-15px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:17px solid rgba(1,40,57,.56)}
+.bannerTower.t2{left:49%;height:38px;opacity:.46}
+.bannerBus{position:absolute;right:27%;bottom:7px;width:128px;height:66px;border-radius:17px 17px 7px 7px;background:linear-gradient(180deg,rgba(1,48,67,.26),rgba(0,40,58,.66));border:2px solid rgba(158,220,233,.09);box-shadow:0 10px 20px rgba(1,29,43,.18);transform:skewX(-3deg);opacity:.62}
+.bannerBus:before{content:"";position:absolute;left:12px;right:12px;top:9px;height:24px;border-radius:9px 9px 4px 4px;background:linear-gradient(90deg,rgba(77,153,176,.11),rgba(143,214,229,.06));border:1px solid rgba(154,220,234,.08)}
+.bannerBus:after{content:"";position:absolute;left:15px;right:15px;bottom:12px;height:9px;border-top:1px solid rgba(147,211,226,.08);border-bottom:1px solid rgba(147,211,226,.05)}
+.bannerWheel{position:absolute;bottom:-6px;width:18px;height:18px;border-radius:50%;background:#073c52;border:3px solid rgba(153,216,230,.08)}
+.bannerWheel.w1{left:18px}.bannerWheel.w2{right:18px}
+.bannerWind{position:absolute;top:10px;width:2px;height:21px;background:rgba(168,224,236,.08)}
+.bannerWind.w1{left:42px}.bannerWind.w2{left:73px}.bannerWind.w3{left:102px}
+.bannerLine{position:absolute;left:35%;right:19%;bottom:5px;height:22px;background:linear-gradient(105deg,transparent 0 22%,rgba(120,201,219,.045) 23% 23.4%,transparent 24% 100%)}
+
+@media(max-width:1050px){.headerTagline{display:none}.bannerBus{right:18%;opacity:.48}.bannerCity{left:28%;right:8%;opacity:.32}}
+@media(max-width:760px){.topbar{height:102px}.headerDate{display:none}.brandText h1{font-size:23px}.brandText p{font-size:11px;max-width:310px}.bannerArt{opacity:.55}.bannerBus{right:-5%;opacity:.28}.bannerCity{left:43%;right:-10%;opacity:.24}}
+
+.app{max-width:1536px;margin:auto;padding:14px 20px 10px}.controlDeck{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:270px 230px 145px 165px 205px 1fr;gap:18px;align-items:end}.field{display:flex;flex-direction:column;gap:6px}.field>label{font-size:10px;font-weight:900;color:#61798a;letter-spacing:.07em;text-transform:uppercase}.seg{background:#edf3f6;border-radius:8px;padding:3px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.seg button{border:0;background:transparent;border-radius:7px;padding:9px 12px;color:#4d6b7d;font-weight:800;cursor:pointer}.seg button.active{color:white;background:linear-gradient(180deg,#0c7ea4,#08627f);box-shadow:0 3px 8px rgba(6,82,108,.18)}.field select,.field input[type=time]{height:38px;border:1px solid #cfdde5;border-radius:8px;background:white;padding:0 12px;color:var(--ink);font-weight:800}.buttonRow{display:flex;gap:8px}.btn{height:38px;min-width:40px;border:1px solid #d4e1e7;border-radius:8px;background:white;color:var(--ink);font-weight:900;cursor:pointer}.btn.play{background:var(--blue);border-color:var(--blue);color:white;font-size:17px;box-shadow:0 4px 10px rgba(13,133,181,.22)}.speed{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.speed .btn.active{background:linear-gradient(180deg,#0c708f,#07536d);border-color:#07536d;color:white}.lineControls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.lineSwitch{height:38px;min-width:88px;border:1px solid #d6e2e8;border-radius:9px;background:white;padding:0 9px;display:flex;align-items:center;gap:7px;cursor:pointer}.lineSwitch input{position:absolute;opacity:0}.lineDot{width:11px;height:11px;border-radius:50%}.lineSwitch b{font-size:13px}.miniToggle{margin-left:auto;width:25px;height:14px;border-radius:999px;background:#1689ee;position:relative}.miniToggle:after{content:"";position:absolute;width:10px;height:10px;right:2px;top:2px;background:white;border-radius:50%;box-shadow:0 1px 2px rgba(0,0,0,.2)}.lineSwitch:has(input:not(:checked)){opacity:.48}.lineSwitch:has(input:not(:checked)) .miniToggle{background:#bac7ce}.lineSwitch:has(input:not(:checked)) .miniToggle:after{right:13px}
+ .simSlider{margin:9px 4px 0;padding:0 8px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px}.simSlider>span{font-size:9px;color:#637c8b;font-weight:800}.sliderRail{position:relative;height:32px;display:flex;align-items:center}.sliderRail input{position:relative;z-index:2;width:100%;height:28px;margin:0;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer;--p:14.58%}.sliderRail input::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:linear-gradient(to right,var(--blue) 0 var(--p),#d6e2e8 var(--p) 100%)}.sliderRail input::-moz-range-track{height:4px;border-radius:999px;background:linear-gradient(to right,var(--blue) 0 var(--p),#d6e2e8 var(--p) 100%)}.sliderRail input::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:28px;background:transparent;border:0;margin-top:-12px}.sliderRail input::-moz-range-thumb{width:30px;height:28px;background:transparent;border:0}.sliderBus{position:absolute;z-index:8;left:var(--bus-x,14.58%);top:50%;transform:translate(-50%,-50%);width:20px;height:20px;display:grid;place-items:center;pointer-events:none;transition:left .08s linear;background:transparent;border:0;box-shadow:none}.sliderBus:after{display:none}.sliderBus svg{width:19px;height:19px;overflow:visible}.sliderBus .busShell{fill:#fff;stroke:#07506a;stroke-width:1.35}.sliderBus .busDetail{fill:none;stroke:#07506a;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}.sliderBus .busWheel{fill:#fff;stroke:#07506a;stroke-width:1.15}.sliderRail.playing .sliderBus{box-shadow:none}
+.workspace{display:grid;grid-template-columns:42% 58%;gap:16px;margin-top:16px;align-items:start}.workspace.compareMode{grid-template-columns:1fr}.workspace.compareMode .mapPane,.workspace.compareMode .dashboardPane{grid-column:1}.workspace.compareMode .maps.compare{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.workspace.compareMode .maps.compare .mapCard .map{height:460px}.mapCard,.dashCard,.panelCard,.compareFull{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.mapCard{overflow:hidden}.maps{display:grid;grid-template-columns:1fr;gap:12px}.maps.compare{grid-template-columns:1fr 1fr}.maps.compare .mapCard .map{height:510px}.mapHead{height:70px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e4ecef}.mapHeadTitle{display:flex;gap:12px;align-items:center}.mapGlyph{width:26px;height:26px;color:#0b769c}.mapGlyph svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.mapHead h2{margin:0;font-size:16px}.mapHead p{margin:2px 0 0;color:#78909f;font-size:11px}.mapStats{min-width:112px;border-radius:10px;background:#eef5f7;padding:7px 10px;display:grid;grid-template-columns:auto 1fr;gap:1px 6px;align-items:center;text-align:left;color:#274c5e}.mapStats .liveDot{grid-row:1/3;width:7px;height:7px;border-radius:50%;background:#00a66a}.mapStats b{font-size:12px}.mapStats small{font-size:9px;color:#6e8693}.mapWrap{position:relative}.map{height:596px;background:#e9f0f2}.map:not(.basemap-satellite) .leaflet-tile-pane{filter:saturate(.83) brightness(1.035) contrast(.96)}.map.basemap-satellite .leaflet-tile-pane{filter:none}.basemapControl{font-family:inherit}.basemapToggle{display:flex;align-items:center;gap:6px;border:1px solid #d2dfe5;border-radius:9px;background:rgba(255,255,255,.96);padding:8px 10px;color:#17364a;font-size:10px;font-weight:800;box-shadow:0 4px 12px rgba(16,52,70,.12);cursor:pointer}.basemapToggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.basemapMenu{display:none;margin-top:6px;min-width:126px;background:rgba(255,255,255,.98);border:1px solid #d2dfe5;border-radius:10px;padding:5px;box-shadow:0 8px 22px rgba(16,52,70,.16)}.basemapControl.open .basemapMenu{display:block}.basemapOption{width:100%;border:0;background:transparent;border-radius:7px;padding:7px 8px;text-align:left;color:#24475b;font-size:10px;font-weight:700;cursor:pointer}.basemapOption:hover{background:#eef6f8}.basemapOption.active{background:#e6f3f7;color:#087ca5}.mapLegend{position:absolute;z-index:500;left:14px;bottom:14px;width:188px;background:rgba(255,255,255,.96);border:1px solid #d4e1e7;border-radius:9px;padding:10px 12px;box-shadow:0 4px 15px rgba(20,54,71,.14)}.mapLegend strong{font-size:11px}.mapLegend div{display:grid;grid-template-columns:10px 28px 1fr;gap:7px;align-items:center;margin-top:7px;font-size:9px}.mapLegend i{width:9px;height:9px;border-radius:50%}.fitBtn{position:absolute;z-index:500;right:14px;bottom:14px;border:1px solid #d2dfe5;border-radius:9px;background:white;padding:9px 12px;color:#17364a;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(16,52,70,.12);cursor:pointer}.mapError{display:none;padding:16px;color:#bd342d}
+.dashboardPane{min-width:0}.infoGrid{display:grid;gap:12px}.dashCard{padding:14px}.dashHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.cardTitle{font-size:15px;font-weight:900;color:#15354a}.cardTitle small{font-size:11px;color:#718996;font-weight:700}.iconTitle{display:flex;align-items:center;gap:8px}.titleIcon,.smallIcon,.circleIcon{display:grid;place-items:center;color:#0b89b4}.titleIcon svg{width:21px;height:21px}.smallIcon svg{width:18px;height:18px}.titleIcon svg,.smallIcon svg,.circleIcon svg,.kpiIcon svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.ghostPill{font-size:10px;color:#6f8998;background:#f1f5f7;border-radius:999px;padding:6px 10px}.kpiGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpiCard{position:relative;min-height:128px;border:1px solid #dbe6eb;border-radius:11px;padding:14px 13px;background:#fff}.kpiIcon{display:block;color:#0c92bd;margin-bottom:7px}.kpiIcon svg{width:22px;height:22px}.kpiCard label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.03em;color:#698392;font-weight:900}.kpiCard strong{display:block;font-size:28px;line-height:1.1;margin:7px 0 4px;color:#102d47}.kpiCard strong small{font-size:14px}.kpiCard strong.nextKpi{font-size:19px;margin-top:9px}.kpiCard em{font-style:normal;font-size:9px;color:#7c909c}.deltaPill{position:absolute;right:11px;bottom:16px;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900}.deltaPill.good{background:#e8f8f1;color:#00a36a}.deltaPill.bad{background:#fff0ef;color:#cf443b}.middleGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px;margin-top:12px}.panelCard{padding:14px}.coordPanel{min-height:208px}.coordTop{display:flex;justify-content:space-between;gap:10px}.coordTop p{margin:4px 0 0;color:#738996;font-size:10px}.circleIcon{width:28px;height:28px;border-radius:50%;background:#0c8faf;color:white}.circleIcon.light{background:#e7f6fb;color:#0a87b1}.circleIcon svg{width:16px;height:16px}.statusPill{height:25px;border-radius:999px;padding:5px 10px;font-size:9px;font-weight:900;white-space:nowrap}.statusPill.good{background:#e6f7ef;color:#06985e}.statusPill.warn{background:#fff4da;color:#9d6500}.statusPill.bad{background:#ffefed;color:#c93e37}.coordMeter{height:18px;background:#dbf1e8;border-radius:999px;overflow:hidden;margin-top:18px}.coordMeter span{display:block;height:100%;background:linear-gradient(90deg,#00a55f,#58c99b);border-radius:999px}.coordScale{display:flex;justify-content:space-between;margin-top:6px;color:#6c8594;font-size:9px}.infoBand{margin-top:15px;background:#eaf6fb;border:1px solid #cfe8f2;border-radius:8px;padding:10px 11px;display:flex;gap:9px;color:#255470;font-size:10px}.infoDot{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#0b83b0;color:white;font-weight:900;flex:0 0 auto}.panelHead{display:flex;justify-content:space-between;align-items:center}.linkText{font-size:10px;color:#0a88b7;font-weight:800}.serviceTable{width:100%;border-collapse:collapse;margin-top:10px}.serviceTable th{background:#f5f8fa;color:#728795;font-size:8px;text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:7px}.serviceTable td{padding:8px 7px;border-bottom:1px solid #e9eff2;font-size:10px}.serviceTable td:last-child{text-align:right}.linePill{display:inline-grid;place-items:center;min-width:34px;border-radius:999px;padding:3px 6px;color:white;font-size:9px;font-weight:900}.emptyCell{text-align:center;color:#7c909c}.bottomGrid{display:grid;grid-template-columns:.72fr 1.28fr 1fr;gap:12px;margin-top:12px}.bottomGrid .panelCard{min-height:218px}.fleetWrap{display:grid;grid-template-columns:112px 1fr;gap:12px;align-items:center;margin-top:18px}.donut{width:108px;height:108px;border-radius:50%;display:grid;place-items:center}.donutHole{width:62px;height:62px;border-radius:50%;background:white;display:grid;place-items:center;align-content:center;box-shadow:0 0 0 1px #eef3f5}.donutHole b{font-size:20px}.donutHole span{font-size:8px;color:#718895}.fleetLegend{display:grid;gap:7px}.fleetLegend div{display:grid;grid-template-columns:10px 25px 1fr;gap:5px;align-items:center;font-size:9px}.fleetLegend i{width:9px;height:9px;border-radius:50%}.fleetLegend span{color:#69818f}.hourBars{height:142px;display:flex;align-items:end;gap:4px;padding:16px 8px 0;margin-top:8px;border-left:1px solid #dce7eb;border-bottom:1px solid #dce7eb;background:repeating-linear-gradient(to top,transparent 0 31px,#eef3f5 32px 33px)}.hourCol{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.hourCol i{width:72%;background:linear-gradient(#36b4de,#0e87b5);border-radius:3px 3px 0 0;min-height:4px}.hourCol span{font-size:7px;color:#768d9a}.compareLegend{display:flex;justify-content:flex-end;gap:12px;margin:10px 0;font-size:8px;color:#687f8c}.compareLegend span{display:flex;align-items:center;gap:4px}.compareLegend i{width:8px;height:8px;border-radius:50%}.compareLegend i.old{background:#c9d5db}.compareLegend i.new{background:#0694b9}.compareMiniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.compareMetric{text-align:center}.pairBars{height:55px;display:flex;align-items:flex-end;justify-content:center;gap:5px}.pairBars i{width:24px;border-radius:3px 3px 0 0}.pairBars i.old{background:#c8d4da}.pairBars i.new{background:#0696b9}.pairValues{display:flex;justify-content:center;gap:10px;margin-top:3px;font-size:9px}.pairValues b{color:#0b6f8c}.compareMetric small{font-size:8px;color:#6c8491}.compareFull{padding:16px}.compareFullHead{display:flex;justify-content:space-between;align-items:center}.compareFullGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.compareFullGrid>div{background:#f8fafb;border:1px solid #e3ecef;border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr auto auto auto;gap:7px;align-items:center}.compareFullGrid label{font-size:9px;color:#6c8390}.compareFullGrid b{font-size:13px;color:#7a8d98}.compareFullGrid i{font-style:normal;color:#9aabb4}.compareFullGrid strong{font-size:15px;color:#0786ab}.compareWideCharts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.miniBars{height:145px;display:flex;align-items:end;gap:8px;padding-top:15px}.barCol{flex:1;height:100%;display:grid;grid-template-rows:18px 1fr 17px;text-align:center;align-items:end}.barCol>span{font-size:8px;font-weight:800}.barTrack{height:95px;background:#f0f4f6;border-radius:4px;display:flex;align-items:end;overflow:hidden}.barFill{display:block;width:100%;background:#9cb1bc}.barFill.target{background:#13a5c7}.barCol small{font-size:8px;color:#6e8491}.footerBar{height:52px;margin-top:14px;border-top:1px solid #dbe6ea;display:flex;align-items:center;justify-content:space-between;color:#718995;font-size:9px}.footerBar>div{display:flex;align-items:center;gap:8px}.footerLine{width:32px;height:1px;background:#1a6681}.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);background:rgba(5,61,82,.96);color:white;padding:9px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:9999;font-size:11px}.toast.show{opacity:1;transform:translate(-50%,0)}
+.busIcon{position:relative;width:34px;height:39px}.busIcon svg{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}.busLabel{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);min-width:24px;text-align:center;border-radius:999px;padding:1px 4px;color:white;font-size:9px;font-weight:950;border:1px solid rgba(255,255,255,.8)}.extraDot{position:absolute;right:1px;top:0;width:9px;height:9px;background:#e3a11b;border:2px solid white;border-radius:50%}.leaflet-tooltip.poiTip{background:#fff;border:1px solid #c8d6dc;color:#263747;box-shadow:0 2px 7px rgba(0,0,0,.08);font-weight:850;font-size:10px}.leaflet-popup-content{margin:10px 12px}.popupTitle{font-weight:900;font-size:13px;margin-bottom:5px}.popupGrid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:11px}.popupGrid b{color:#61707e}.leaflet-control-attribution{font-size:8px!important}
+@media(max-width:1200px){.controlDeck{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:1fr}.bottomGrid{grid-template-columns:1fr 1fr}.map{height:520px}}@media(max-width:760px){.topbar{height:auto;padding:16px 0}.topinner{align-items:flex-start;gap:16px}.headerTagline{display:none}.controlDeck{grid-template-columns:1fr 1fr}.workspace,.maps.compare,.middleGrid,.bottomGrid,.compareWideCharts{grid-template-columns:1fr}.kpiGrid{grid-template-columns:1fr 1fr}.map{height:440px}.headerDate{display:none}}
+
+/* v5 — interactive dashboard refinements */
+.sideTabs{position:relative;z-index:20;display:flex;gap:3px;background:#eef4f6;padding:3px;border-radius:9px;margin-bottom:12px;width:max-content;isolation:isolate}
+.sideTabs button{border:0;background:transparent;color:#657984;font:800 10px/1 Inter,system-ui;padding:7px 11px;border-radius:7px;cursor:pointer;text-transform:uppercase;letter-spacing:.045em;transition:.16s}
+.sideTabs button:hover{color:#075b77;background:#f8fbfc}.sideTabs button.active{background:#fff;color:#075b77;box-shadow:0 1px 5px rgba(17,58,81,.11)}
+.filterBanner{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #cfe6ee;background:#eef9fc;border-radius:9px;padding:7px 9px;margin-bottom:10px;font-size:10px;color:#416775}
+.filterBanner b{display:inline-flex;align-items:center;gap:6px;color:#075b77}.filterBanner i{width:9px;height:9px;border-radius:50%;display:inline-block}.filterBanner button{border:0;background:#fff;color:#637680;width:22px;height:22px;border-radius:6px;cursor:pointer;font-weight:900}
+.kpiCard.interactive,.panelCard.interactive,.serviceTable tbody tr,.hourCol,.barCol,.coordEvent,.coordGap,.detailRow,.compareTable tbody tr[data-action]{cursor:pointer;transition:transform .14s,box-shadow .14s,border-color .14s,background .14s}
+.kpiCard.interactive:hover,.panelCard.interactive:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(17,58,81,.10);border-color:#bfd7e1}.kpiCard.interactive:active{transform:translateY(0)}
+.kpiCard .clickHint{display:block;margin-top:3px;font-size:8px;color:#8a9aa3;font-style:normal}.kpiCard:hover .clickHint{color:#087d9f}
+.coordNew{padding:0}.coordNew .panelHead{padding-bottom:6px}.coordIntro{font-size:9px;color:#7b8d96;margin:-2px 0 8px}
+.coordDirection{border:1px solid #e4edf0;border-radius:10px;background:#fbfdfe;padding:8px;margin-top:7px;overflow:hidden}.coordDirectionTitle{display:flex;justify-content:space-between;gap:8px;font-size:9px;font-weight:850;color:#526b77;margin-bottom:7px}.coordSequence{display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}.coordEvent{min-width:51px;text-align:center;border-radius:8px;padding:5px 4px;background:white;border:1px solid #e3ecef}.coordEvent:hover{border-color:#8bc6d7;background:#f0fbfe}.coordEvent .linePill{font-size:8px;padding:2px 6px}.coordEvent time{display:block;margin-top:3px;font-size:9px;font-weight:900;color:#213945}.coordGap{min-width:34px;text-align:center;padding:4px 3px;border-radius:7px;font-size:10px;font-weight:950}.coordGap.target{background:#e9f8f1;color:#16865c}.coordGap.mid{background:#fff4dc;color:#9b620b}.coordGap.alert{background:#ffefed;color:#be4038}.coordGap.neutral{background:#eef3f5;color:#526a76}.coordGap:hover{filter:brightness(.97);transform:translateY(-1px)}
+.next60Count{font-variant-numeric:tabular-nums}.detailPanel{margin-top:10px;border:1px solid #dce8ec;background:#fbfdfe;border-radius:11px;overflow:hidden}.detailHead{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f1f7f9;border-bottom:1px solid #dde8ec}.detailHead strong{font-size:10px}.detailHead button{border:0;background:#fff;border-radius:6px;width:22px;height:22px;cursor:pointer;color:#60737e}.detailBody{max-height:210px;overflow:auto}.detailRow{display:grid;grid-template-columns:48px 1fr auto;gap:7px;align-items:center;padding:7px 9px;border-top:1px solid #edf2f4;font-size:9px}.detailRow:first-child{border-top:0}.detailRow:hover{background:#f2fafc}.detailRow b{font-size:10px}.detailRow .muted{color:#758791}.detailRow .right{text-align:right;font-weight:850}.detailEmpty{padding:12px;color:#7b8d96;font-size:9px}
+.freqStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}.freqStat{border:1px solid #e4ecef;background:#fbfdfe;border-radius:9px;padding:8px}.freqStat span{display:block;font-size:8px;text-transform:uppercase;color:#7d8f98;font-weight:850}.freqStat b{display:block;margin-top:3px;font-size:16px;color:#123848}.freqStat small{font-size:8px;color:#8798a0}
+.hourCol{border-radius:5px;padding-top:2px}.hourCol:hover{background:#eef8fb}.hourCol.selected{background:#e3f5fa;outline:1px solid #9ed7e5}.hourCol i{transition:height .2s,background .15s}.hourCol:hover i,.hourCol.selected i{background:#087d9f!important}.hourCol span{pointer-events:none}
+.barCol{border-radius:6px;padding:2px}.barCol:hover{background:#eef8fb}.barCol.selected{background:#e4f6fa;outline:1px solid #a8dae6}.barCol .barTrack,.barCol span,.barCol small{pointer-events:none}
+.clickExplain{font-size:8px;color:#8798a1;margin-top:5px}.sectionAction{font-size:9px;color:#0783aa;font-weight:800}
+.compareTable{width:100%;border-collapse:collapse;font-size:9px}.compareTable th{text-align:left;text-transform:uppercase;letter-spacing:.04em;color:#7b8d97;font-size:8px;padding:6px;border-bottom:1px solid #e5edf0}.compareTable th:not(:first-child),.compareTable td:not(:first-child){text-align:right}.compareTable td{padding:7px 6px;border-bottom:1px solid #edf2f4}.compareTable tbody tr[data-action]:hover{background:#f1fafc}.compareTable td strong{color:#047d9f}.compareDelta.good{color:#14845a;font-weight:900}.compareDelta.bad{color:#c0443b;font-weight:900}.compareDelta.neutral{color:#6d7e88;font-weight:850}
+.compareSummaryKpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0}.compareSummaryKpis>div{background:#f8fbfc;border:1px solid #e2ebef;border-radius:9px;padding:8px}.compareSummaryKpis span{font-size:8px;text-transform:uppercase;color:#7c8f99}.compareSummaryKpis b{display:block;font-size:15px;margin-top:2px}.compareSummaryKpis small{font-size:8px;color:#15845d}
+.selectedBus .busIcon:before{content:"";position:absolute;inset:-5px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #0b84aa,0 3px 12px rgba(0,0,0,.22)}.busIcon.dimmed{opacity:.32;filter:saturate(.65)}
+.routeFilterNote{font-size:8px;color:#7e9099;margin-top:5px}.mapLegend div{cursor:pointer;border-radius:6px;padding:2px 3px}.mapLegend div:hover{background:#eef7fa}.mapLegend div.selected{background:#e3f5fa;outline:1px solid #a7d8e4}
+.dashboardPane{scrollbar-width:thin;scrollbar-color:#a8bac2 transparent}
+@media(max-width:1100px){.sideTabs{width:100%}.sideTabs button{flex:1}.compareSummaryKpis{grid-template-columns:1fr 1fr}.freqStats{grid-template-columns:1fr 1fr}}
+
+/* v7 — unified exploratory dashboard */
+.sideTabs{display:none!important}
+.dashboardPane .dashCard{padding:14px}
+.dashboardSection{margin-top:12px}.dashboardSection:first-of-type{margin-top:0}
+.analysisGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.analysisGrid .panelCard{min-height:205px}
+.compareCompact{margin-top:12px;padding:14px;background:#fff;border:1px solid #dbe6eb;border-radius:12px}
+.compareCompactHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.compareCompactHead p{margin:2px 0 0;font-size:9px;color:#7b8e98}.compareCompactHead .ghostPill{white-space:nowrap}
+.compareCompact .compareTable td,.compareCompact .compareTable th{padding:6px 5px}
+.compareCompact .compareTable tbody tr[data-action]{cursor:pointer}
+.coordNew{padding:14px}.coordNew .panelHead{padding-bottom:3px}.coordNew .circleIcon{background:#eef7fa;color:#087fa7}
+.coordIntro{margin:0 0 9px;color:#82929a}
+.coordDirection{border:0;border-top:1px solid #e8eef1;border-radius:0;background:transparent;padding:9px 0 3px;margin-top:0;overflow:visible}.coordDirection:first-of-type{border-top:0}
+.coordDirectionTitle{margin-bottom:8px;color:#5e7480}.coordDirectionTitle span:last-child{font-weight:650;color:#94a1a7}
+.coordSequence{gap:5px;overflow-x:auto;padding:1px 0 4px}.coordEvent{cursor:default!important;min-width:48px;border:0;border-radius:0;padding:2px 2px;background:transparent;text-align:center;box-shadow:none!important;transform:none!important}.coordEvent:hover{border:0;background:transparent}.coordLine{display:inline-block;font-size:10px;font-weight:950;line-height:1;border-bottom:2px solid currentColor;padding:0 2px 3px}.coordEvent time{margin-top:4px;font-size:9px;color:#344c5a}.coordGapPlain{cursor:default!important;min-width:31px;text-align:center;color:#526c79;font-size:11px;font-weight:950;position:relative}.coordGapPlain:before,.coordGapPlain:after{content:"";position:absolute;top:50%;width:7px;height:1px;background:#cdd9de}.coordGapPlain:before{left:-2px}.coordGapPlain:after{right:-2px}
+.coordGap,.coordGap.target,.coordGap.mid,.coordGap.alert,.coordGap.neutral{box-shadow:none}
+.kpiCard.interactive{box-shadow:none}.kpiCard.interactive:hover{box-shadow:0 5px 14px rgba(17,58,81,.08);transform:translateY(-1px)}
+.panelCard.interactive{cursor:default}.panelCard.interactive:hover{transform:none;box-shadow:0 5px 14px rgba(17,58,81,.07)}
+.hourBars{height:125px}.miniBars{height:130px}
+.sectionAction{font-weight:750;color:#568294}.clickExplain{color:#84949c}
+.detailPanel{margin-top:12px}
+.detailPanel .coordGap{background:#eef4f6!important;color:#365766!important}
+.mapLegend div.selected{background:#edf8fb;outline:1px solid #a7d8e4}
+@media(max-width:1100px){.analysisGrid{grid-template-columns:1fr}.compareCompact{overflow:auto}}
+
+
+
+
+
+/* v16 — apenas apresentação da Coordenação dos próximos serviços */
+.coordNew{padding:0}
+.coordNew .panelHead{padding-bottom:5px}
+.coordIntro{font-size:9px;color:#7b8d96;margin:-2px 0 8px}
+.coordDirection{
+  border:1px solid #dfe9ed;
+  border-radius:9px;
+  background:#fff;
+  padding:9px 11px 10px;
+  margin-top:8px;
+  overflow:hidden;
+}
+.coordDirectionTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:0 0 7px;
+  color:#183d56;
+  font-size:9.5px;
+  font-weight:900;
+}
+.coordDirectionTitle span:last-child{
+  color:#81949e;
+  font-size:8.5px;
+  font-weight:650;
+}
+.coordSequence.coordTimeline{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:0;
+  overflow-x:auto;
+  padding:0 2px 2px;
+  scrollbar-width:thin;
+}
+.coordSequence.coordTimeline::before{
+  content:"";
+  position:absolute;
+  left:4%;
+  right:4%;
+  top:32px;
+  height:1.5px;
+  background:#cbdbe2;
+  z-index:0;
+}
+.coordTimeline .coordEvent{
+  position:relative;
+  z-index:2;
+  flex:1 0 66px;
+  min-width:60px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  text-align:center;
+  cursor:default!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.coordTimeline .coordEvent:hover{
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+}
+.coordTimeline .coordLine{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:24px;
+  height:18px;
+  padding:0 6px;
+  border:0;
+  border-radius:5px;
+  color:var(--line-color);
+  background:color-mix(in srgb,var(--line-color) 12%,white);
+  font-size:9px;
+  font-weight:950;
+  line-height:1;
+}
+.coordTimeline .coordDot{
+  display:block;
+  width:10px;
+  height:10px;
+  margin:5px auto 0;
+  border-radius:50%;
+  background:var(--line-color);
+  border:2px solid #fff;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--line-color) 22%,transparent);
+}
+.coordTimeline .coordEvent time{
+  display:block;
+  margin-top:5px;
+  color:#16384f;
+  font-size:9.5px;
+  font-weight:950;
+  line-height:1;
+}
+.coordTimeline .coordGapPlain{
+  position:relative;
+  z-index:3;
+  align-self:flex-start;
+  flex:.8 0 48px;
+  min-width:42px;
+  margin-top:26px;
+  padding:0 5px;
+  background:#fff;
+  color:#5d7887;
+  text-align:center;
+  font-size:8.5px;
+  font-weight:700;
+  line-height:13px;
+  white-space:nowrap;
+  cursor:default!important;
+}
+.coordTimeline .coordGapPlain b{font-size:9.5px;font-weight:950;color:#496775}
+.coordTimeline .coordGapPlain::before,
+.coordTimeline .coordGapPlain::after{display:none!important}
+@media(max-width:1100px){
+  .coordTimeline .coordEvent{flex-basis:62px}
+  .coordTimeline .coordGapPlain{flex-basis:44px}
+}
+
+
+/* v17 — apenas afinação de espaçamento da coordenação */
+.coordNew.dashboardSection{
+  margin-top:16px;
+  padding:0 14px 14px;
+}
+.coordNew .panelHead{
+  padding:0 4px 5px;
+}
+.coordNew .coordIntro{
+  padding:0 4px;
+}
+.coordNew .coordDirection{
+  padding-left:15px;
+  padding-right:15px;
+}
+.coordNew .coordSequence.coordTimeline{
+  padding-left:7px;
+  padding-right:7px;
+}
+
+
+/* v18 — apenas respiro interno do cabeçalho da coordenação */
+.coordNew .panelHead{
+  padding:10px 8px 8px;
+}
+.coordNew .coordIntro{
+  padding:0 8px;
+  margin:0 0 10px;
+}
+</style></head><body>
+<header class="topbar">
+  <div class="bannerArt" aria-hidden="true">
+    <div class="bannerGlow"></div><div class="bannerRoad"></div><div class="bannerLine"></div>
+    <div class="bannerCity"><i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i><i class="b b5"></i><i class="b b6"></i><i class="b b7"></i><i class="b b8"></i><i class="b b9"></i><i class="b b10"></i></div>
+    <i class="bannerTower"></i><i class="bannerTower t2"></i>
+    <div class="bannerBus"><i class="bannerWind w1"></i><i class="bannerWind w2"></i><i class="bannerWind w3"></i><i class="bannerWheel w1"></i><i class="bannerWheel w2"></i></div>
+  </div>
+  <div class="topinner">
+    <div class="brandText"><h1>TUB · Rede em Movimento</h1><p>Simulação operacional e análise de frequência · Linhas 18, 58, 97 e 101</p></div>
+    <div class="headerMeta"><div class="headerTagline">Cenários para uma<br>mobilidade melhor.</div><div class="headerDate"><span id="realDate">14 set 2026</span><b id="realClock">19:54</b></div></div>
+  </div>
+</header>
+<main class="app">
+  <section class="controlDeck">
+    <div class="field"><label>Cenário</label><div class="seg" id="modeButtons"><button data-mode="current">Atual</button><button data-mode="proposed" class="active">Proposto</button><button data-mode="compare">Comparar</button></div></div>
+    <div class="field"><label>Foco da análise</label><select id="focusSelect"><option value="network">Rede</option><option value="raio">Rua do Raio</option><option value="pinheiro">Pinheiro do Bicho</option><option value="lomar">Eixo Lomar</option><option value="esporoes">Eixo Esporões</option></select></div>
+    <div class="field"><label>Hora da simulação</label><input type="time" id="timeInput" value="08:20" step="60"></div>
+    <div class="field"><label>Reprodução</label><div class="buttonRow"><button class="btn" id="backBtn">◀</button><button class="btn play" id="playBtn">▶</button><button class="btn" id="forwardBtn">▶</button></div></div>
+    <div class="field"><label>Velocidade</label><div class="speed" id="speedButtons"><button class="btn" data-speed="1">1×</button><button class="btn" data-speed="5">5×</button><button class="btn active" data-speed="15">15×</button><button class="btn" data-speed="30">30×</button></div></div>
+    <div class="field"><label>Linhas em exibição</label><div class="lineControls" id="legend"></div></div>
+    <input type="checkbox" id="showRoutes" checked hidden>
+  </section>
+  <div class="simSlider"><span>06:00</span><div class="sliderRail" id="sliderRail"><input type="range" id="timeRange" min="360" max="1320" step="0.1" value="500" aria-label="Hora da simulação"><span class="sliderBus" id="sliderBus" aria-hidden="true"><svg viewBox="0 0 24 24"><rect class="busShell" x="5" y="3.2" width="14" height="15.8" rx="3"/><path class="busDetail" d="M7.5 7.2h9M7.5 11h9M8 18.8v1.6M16 18.8v1.6"/><circle class="busWheel" cx="8.5" cy="15.5" r="1.05"/><circle class="busWheel" cx="15.5" cy="15.5" r="1.05"/></svg></span></div><span style="text-align:right">22:00</span></div>
+
+  <section class="workspace">
+    <div class="mapPane"><div class="maps" id="mapsWrap">
+      <article class="mapCard" id="currentCard"><div class="mapHead"><div class="mapHeadTitle"><span class="mapGlyph"><svg viewBox="0 0 24 24"><path d="M5 4l5-2 5 2 4-2v18l-4 2-5-2-5 2zM10 2v18M15 4v18" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span><div><h2>Mapa da rede</h2><p>Posição dos veículos no cenário atual</p></div></div><div class="mapStats" id="currentStats"></div></div><div class="mapWrap"><div id="mapCurrent" class="map"></div><div class="mapLegend"><strong>Linhas</strong><div><i style="background:#7c3aed"></i><b>18</b><span>Pinheiro do Bicho</span></div><div><i style="background:#0284c7"></i><b>58</b><span>Pinheiro do Bicho</span></div><div><i style="background:#dc2626"></i><b>97</b><span>Celeirós</span></div><div><i style="background:#16a34a"></i><b>101</b><span>Guisande</span></div></div><button class="fitBtn" id="fitCurrent">⛶ Ver área completa</button></div><div class="mapError" id="errCurrent">Não foi possível carregar o mapa-base.</div></article>
+      <article class="mapCard" id="proposedCard"><div class="mapHead"><div class="mapHeadTitle"><span class="mapGlyph"><svg viewBox="0 0 24 24"><path d="M5 4l5-2 5 2 4-2v18l-4 2-5-2-5 2zM10 2v18M15 4v18" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span><div><h2>Mapa da rede</h2><p>Posição em tempo real dos veículos na simulação</p></div></div><div class="mapStats" id="proposedStats"></div></div><div class="mapWrap"><div id="mapProposed" class="map"></div><div class="mapLegend"><strong>Linhas</strong><div><i style="background:#7c3aed"></i><b>18</b><span>Pinheiro do Bicho</span></div><div><i style="background:#0284c7"></i><b>58</b><span>Pinheiro do Bicho</span></div><div><i style="background:#dc2626"></i><b>97</b><span>Celeirós</span></div><div><i style="background:#16a34a"></i><b>101</b><span>Guisande</span></div></div><button class="fitBtn" id="fitProposed">⛶ Ver área completa</button></div><div class="mapError" id="errProposed">Não foi possível carregar o mapa-base.</div></article>
+    </div></div>
+
+    <aside class="dashboardPane" id="dashboardPane"><div class="compareFull hidden" id="comparisonPanel"></div><div class="infoGrid"><div class="dashCard" id="currentDashCard"><div id="infoCurrent"></div></div><div class="dashCard" id="proposedDashCard"><div id="infoProposed"></div></div></div></aside>
+  </section>
+  <footer class="footerBar"><div><i class="footerLine"></i><span>Transporte Urbano de Braga</span><span>·</span><span>Dados simulados</span><span>·</span><span>Para planeamento e análise operacional</span></div><div><a href="https://tub.pt/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;font-weight:800">tub.pt</a></div></footer>
+</main>
+<div class="toast" id="toast"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'"></script>
+<script>
+const DATA={"routes":{"18":{"out":[[-8.42126060499993,41.549163005000025],[-8.421689281999932,41.54889212100005],[-8.420954712999958,41.54765056400004],[-8.419799609999927,41.54567176000006],[-8.418149222999944,41.542875337000055],[-8.417928414999949,41.54247300700007],[-8.417863317999945,41.54227728200004],[-8.41783853399994,41.54206490100006],[-8.417829466999933,41.541928029000076],[-8.417869424999935,41.54179529700008],[-8.417967605999934,41.54167190000004],[-8.41895289599995,41.54070852000007],[-8.419022618999975,41.540568662000055],[-8.419045249999954,41.54044904700004],[-8.419038262999948,41.54037438000006],[-8.418544382999926,41.53895925200004],[-8.41852690199994,41.538826544000074],[-8.41853933699997,41.53874360900005],[-8.418566602999931,41.53864529300006],[-8.418629892999945,41.538561833000074],[-8.418741446999945,41.538464376000036],[-8.41898537399993,41.53830299900005],[-8.420005142999969,41.53769850900005],[-8.420297371999936,41.53758918500006],[-8.420504968999978,41.53758129400006],[-8.420741908999958,41.537638651000066],[-8.42202124399995,41.53807780500006],[-8.422271928999976,41.538103662000026],[-8.422535282999945,41.53805456400005],[-8.422726962999945,41.537971147000064],[-8.42289109799998,41.53787050400007],[-8.423387280999975,41.53715172900007],[-8.423516062999965,41.53689110000005],[-8.42352895199997,41.53667154300007],[-8.42337372999998,41.53624723100006],[-8.423460862999946,41.53608959400003],[-8.423407668999971,41.536003494000056],[-8.423262185999931,41.53594376800004],[-8.422922355999958,41.535676668000065],[-8.422699011999953,41.53551835900004],[-8.419997769999952,41.533905264000055],[-8.419809828999973,41.533767295000075],[-8.419659451999962,41.53361365400008],[-8.419506940999952,41.53336809900003],[-8.41787045999996,41.52830535700008],[-8.417824776999964,41.52806331800008],[-8.417823465999959,41.52783975800003],[-8.419182335999949,41.52234795900006],[-8.419315500999971,41.52181682200006],[-8.419399322999936,41.52128960600004],[-8.41984429699994,41.51961908700008],[-8.419939136999972,41.51913153800007],[-8.420089528999938,41.518129791000035],[-8.42029776399994,41.516685444000075],[-8.420361931999935,41.516491260000066],[-8.42087112799993,41.51564666500008],[-8.420922502999929,41.51549454600007],[-8.42094069999996,41.515298794000046],[-8.420927388999928,41.51512188800007],[-8.42088304799995,41.51490667200005],[-8.419921822999981,41.51228479500003],[-8.42002343699994,41.51209684500003],[-8.420944867999935,41.51121624700005],[-8.421019506999926,41.511060273000055],[-8.421007952999958,41.51089049500007],[-8.420884418999947,41.510301765000065],[-8.42086011999993,41.509746359000076],[-8.420882780999932,41.50964761400007],[-8.421575781999934,41.50872695400005],[-8.421653705999972,41.50865414400005],[-8.421796755999935,41.508567345000074],[-8.423373740999978,41.50826077800008],[-8.423545247999925,41.50820913500007],[-8.427385250999976,41.50761910400007],[-8.427637627999957,41.50762326200004],[-8.429717792999952,41.50786593500004],[-8.430406652999977,41.50786884000007],[-8.43194299199996,41.507815304000076],[-8.432255019999957,41.507834219000074],[-8.43343671599996,41.50804203700005],[-8.43357827899996,41.50813605600007],[-8.433670929999948,41.50832236900004],[-8.433875149999949,41.508472109000024],[-8.433924762999936,41.50858421200007],[-8.433934713999975,41.50870074300008]],"back":[[-8.43393999999995,41.508710000000065],[-8.433969999999931,41.512110000000064],[-8.43408999999997,41.512500000000045],[-8.434489999999926,41.513640000000066],[-8.434479999999951,41.51382000000007],[-8.434429999999963,41.51398000000006],[-8.43411999999995,41.51443000000006],[-8.433999999999969,41.51484000000005],[-8.434099999999944,41.515910000000076],[-8.43417999999997,41.51673000000005],[-8.434149999999931,41.516950000000065],[-8.434039999999925,41.51720000000006],[-8.43402999999995,41.51734000000005],[-8.434309999999925,41.51945000000006],[-8.434259999999938,41.51962000000003],[-8.43378999999993,41.52059000000003],[-8.43369999999993,41.520710000000065],[-8.432659999999942,41.521520000000066],[-8.432529999999929,41.52167000000003],[-8.43190999999996,41.52276000000006],[-8.431809999999928,41.52287000000007],[-8.431609999999978,41.523000000000025],[-8.431609999999978,41.523000000000025],[-8.430749999999932,41.523510000000044],[-8.430579999999964,41.52366000000006],[-8.42856999999998,41.525870000000054],[-8.42808999999994,41.526410000000055],[-8.428039999999953,41.52653000000004],[-8.427979999999934,41.52671000000004],[-8.42781999999994,41.52792000000005],[-8.427759999999978,41.52806000000004],[-8.427669999999978,41.528170000000046],[-8.426899999999932,41.529130000000066],[-8.426799999999957,41.52934000000005],[-8.426719999999932,41.52958000000007],[-8.426739999999938,41.52973000000003],[-8.426809999999932,41.529900000000055],[-8.427709999999934,41.53147000000007],[-8.42769440199993,41.53157311000007],[-8.427720593999936,41.531667853000044],[-8.427815033999934,41.531685088000074],[-8.428117063999935,41.53160033900008],[-8.42939460699995,41.53103189900003],[-8.430014602999961,41.53074767700008],[-8.431011916999978,41.53017386400006],[-8.431193839999935,41.53009399700005],[-8.431234079999967,41.53011051300007],[-8.43132662399995,41.53010895800003],[-8.431401732999973,41.530067245000055],[-8.431443979999926,41.529991057000075],[-8.431408441999963,41.529902821000064],[-8.431320601999971,41.52986880000003],[-8.43123460399994,41.52987309500003],[-8.431162016999963,41.52991754800007],[-8.431124969999928,41.529960998000035],[-8.43112576599998,41.53002256100007],[-8.43104341399993,41.530129301000045],[-8.429991442999949,41.53073400400007],[-8.428789540999958,41.53127228000005],[-8.42834281699993,41.531457085000056],[-8.428004119999969,41.53151936900008],[-8.42775930099998,41.531537480000054],[-8.427692682999975,41.53157334700006],[-8.427723747999949,41.53166757900004],[-8.427817063999953,41.53169662400006],[-8.428395859999966,41.53185216500003],[-8.429109766999943,41.53204208600005],[-8.429359999999974,41.53213000000005],[-8.429569999999956,41.53227000000004],[-8.429569999999956,41.53227000000004],[-8.429719999999975,41.53248000000008],[-8.429879999999969,41.53292000000005],[-8.430079999999975,41.533570000000054],[-8.430069999999944,41.53377000000006],[-8.430019999999956,41.533960000000036],[-8.42963999999995,41.53505000000007],[-8.429429999999968,41.53643000000005],[-8.429159999999968,41.53747000000004],[-8.429099999999949,41.53762000000006],[-8.429009999999948,41.537810000000036],[-8.42850999999996,41.538670000000025],[-8.427749999999946,41.53958000000006],[-8.427669999999978,41.539720000000045],[-8.427359999999965,41.54039000000006],[-8.427259999999933,41.54052000000007],[-8.42710999999997,41.54065000000003],[-8.426979999999958,41.54074000000003],[-8.425629999999956,41.54115000000007],[-8.425339999999949,41.54133000000007],[-8.425229999999942,41.54156000000006],[-8.425229999999942,41.541720000000055],[-8.425229999999942,41.541720000000055],[-8.425269999999955,41.54212000000007],[-8.425199999999961,41.54218000000003],[-8.422889999999938,41.54274000000004],[-8.41880999999995,41.54370000000006],[-8.418679999999938,41.543690000000026],[-8.417899999999975,41.54249000000004],[-8.41782999999998,41.54233000000005],[-8.417789999999968,41.54215000000005],[-8.417779999999937,41.541990000000055],[-8.417639999999949,41.541930000000036],[-8.417539999999974,41.541990000000055],[-8.417539999999974,41.54211000000004],[-8.417619999999943,41.54221000000007],[-8.418789999999944,41.544250000000034],[-8.419689999999946,41.54582000000005],[-8.419639999999958,41.54588000000007],[-8.419119999999964,41.54612000000003],[-8.418749999999932,41.54633000000007],[-8.418309999999963,41.54668000000004],[-8.41793999999993,41.54711000000003],[-8.416749999999979,41.548230000000046],[-8.416749999999979,41.548230000000046],[-8.41644999999994,41.548370000000034],[-8.416079999999965,41.54861000000005],[-8.415979999999934,41.54870000000005],[-8.415509999999927,41.54890000000006],[-8.415519999999958,41.549150000000054],[-8.416279999999972,41.55013000000008],[-8.41728999999998,41.55152000000004],[-8.417409999999961,41.551510000000064],[-8.41784999999993,41.551090000000045],[-8.419869999999946,41.549960000000056]]},"58":{"out":[[-8.421259999999961,41.54916000000003],[-8.421649999999943,41.54894000000007],[-8.418649999999957,41.54385000000008],[-8.41871999999995,41.54377000000005],[-8.419749999999965,41.54352000000006],[-8.420469999999966,41.545030000000054],[-8.425489999999968,41.54380000000003],[-8.425199999999961,41.541720000000055],[-8.425309999999968,41.54138000000006],[-8.42560999999995,41.54115000000007],[-8.426909999999964,41.54079000000007],[-8.42727999999994,41.54053000000005],[-8.427659999999946,41.53973000000008],[-8.428469999999948,41.53872000000007],[-8.429089999999974,41.53767000000005],[-8.42937999999998,41.53653000000003],[-8.429619999999943,41.535060000000044],[-8.42999999999995,41.533960000000036],[-8.430059999999969,41.53370000000007],[-8.429859999999962,41.53292000000005],[-8.429629999999975,41.53237000000007],[-8.429384109999944,41.532112047000055],[-8.429384109999944,41.532112047000055],[-8.42920389099993,41.53201940900004],[-8.428159999999934,41.53173000000004],[-8.428123146999951,41.53162078400004],[-8.42829014199998,41.53151156900003],[-8.430018880999967,41.53074698900008],[-8.430837064999935,41.53029405600006],[-8.431175243999974,41.53010300300008],[-8.431304430999944,41.53012047400006],[-8.431404553999926,41.53008112300006],[-8.431449691999944,41.52999960500006],[-8.431425092999973,41.52989399300003],[-8.431302088999928,41.52986963200004],[-8.431144027999949,41.529915681000034],[-8.431124005999948,41.530035086000055],[-8.431034245999967,41.530146459000036],[-8.430367074999936,41.53051316900007],[-8.43004437999997,41.53072605500006],[-8.428348807999953,41.53146297500007],[-8.427914082999962,41.53153025100005],[-8.427685990999976,41.53136711700006],[-8.427046231999952,41.530257504000076],[-8.42681218399997,41.529726786000026],[-8.426964372999976,41.52920409500007],[-8.427755101999935,41.52816000000007],[-8.427908016999936,41.527899680000075],[-8.427929999999947,41.52684000000005],[-8.428069999999934,41.52645000000007],[-8.430699999999945,41.52355000000006],[-8.431619999999953,41.52302000000003],[-8.431879999999978,41.522820000000024],[-8.432479999999941,41.52172000000007],[-8.432659999999942,41.52153000000004],[-8.433709999999962,41.52070000000003],[-8.43420999999995,41.519690000000026],[-8.43426999999997,41.519480000000044],[-8.433989999999937,41.51728000000003],[-8.434159999999963,41.51683000000003],[-8.433969999999931,41.51490000000007],[-8.434199999999976,41.51446000000004],[-8.434199999999976,41.51446000000004],[-8.434379999999976,41.51402000000007],[-8.43444999999997,41.51371000000006],[-8.433949999999982,41.51219000000003],[-8.433909999999969,41.508800000000065]],"back":[[-8.433910614999945,41.50880596600007],[-8.433893636999926,41.50855832900004],[-8.433975472999975,41.50825591200004],[-8.433927775999962,41.508139775000075],[-8.433748307999963,41.50810688200005],[-8.433589323999968,41.50811050000004],[-8.432203417999972,41.50784840000006],[-8.430371538999964,41.507887769000035],[-8.429726463999941,41.50787395300006],[-8.427411733999975,41.507636785000045],[-8.423453569999936,41.50824476400004],[-8.421703961999981,41.50860489100006],[-8.421486995999942,41.50877100200006],[-8.420800200999963,41.50969503700003],[-8.42081492099993,41.51025994300005],[-8.420976933999953,41.51100728800003],[-8.420884906999959,41.51122374100004],[-8.420057013999951,41.51202133700008],[-8.41976198499998,41.512068707000026],[-8.42083004999995,41.51496591700004],[-8.42086861499996,41.51549608800008],[-8.420264007999947,41.51658365800006],[-8.419924486999946,41.51897825800006],[-8.419201618999978,41.52174710700007],[-8.41862317999994,41.52414640600006],[-8.417750680999973,41.527767434000054],[-8.417745517999947,41.528168433000076],[-8.419416833999946,41.533492256000045],[-8.41972691999996,41.53384127700008],[-8.422433185999978,41.53548464200003],[-8.422827843999926,41.53574263000007],[-8.42306211999994,41.53596184200006],[-8.423360936999927,41.53655713900008],[-8.423393362999946,41.53672186000006],[-8.423391293999941,41.53687046300007],[-8.42334518499996,41.53703572100005],[-8.422803471999941,41.53782069500005],[-8.42268589799994,41.537916675000076],[-8.422537589999934,41.53798942900005],[-8.422343552999962,41.53804184000006],[-8.422155248999957,41.538058497000065],[-8.421959021999953,41.53803030200004],[-8.420579548999967,41.53755892300006],[-8.420330934999981,41.53753228700003],[-8.42014076199996,41.537562051000066],[-8.419988127999943,41.53761603600003],[-8.418586545999972,41.53845858100004],[-8.418450892999942,41.53858564800004],[-8.418365302999973,41.53871945900005],[-8.41833104999995,41.538853396000036],[-8.41834756299994,41.53899661200006],[-8.41886819299998,41.54043412400006],[-8.41882439799997,41.54064925000006],[-8.417531373999964,41.541948597000044],[-8.417481521999946,41.542110216000026],[-8.419672550999962,41.54584931100004],[-8.418745313999977,41.546329349000075],[-8.418270363999966,41.54671092400008],[-8.417987172999972,41.547059957000045],[-8.416723440999931,41.548274148000075],[-8.416462649999971,41.54836898100007],[-8.416077696999935,41.54860524900005],[-8.415944654999976,41.548737679000055],[-8.41546296499996,41.54893234700006],[-8.417223856999954,41.55154173500006],[-8.417316730999971,41.551566784000045],[-8.41783146299997,41.55108899600003],[-8.419844503999968,41.549947075000034]]},"97":{"outA":[[-8.421248945999935,41.54929101300007],[-8.42168858599996,41.54892285200003],[-8.41968095599998,41.54559001300004],[-8.417816236999954,41.542328817000055],[-8.41775976599996,41.542172304000076],[-8.417785485999957,41.54203756800007],[-8.417824416999963,41.541843938000056],[-8.418751258999976,41.54089460600005],[-8.418993410999974,41.54059083800007],[-8.419037764999928,41.540460462000055],[-8.41899699399994,41.54028337900007],[-8.418565172999934,41.53912918700007],[-8.418492611999966,41.53874202700007],[-8.418533156999956,41.538605723000046],[-8.419325818999937,41.53811146800007],[-8.41985510099994,41.53778238700005],[-8.42007803499996,41.53767383500008],[-8.420351387999972,41.537595182000075],[-8.420647233999944,41.53761909000008],[-8.421385095999938,41.53787497700006],[-8.422068606999972,41.53811470100004],[-8.422508415999971,41.53808223200008],[-8.422869310999943,41.53788922200005],[-8.423240825999926,41.53738122000004],[-8.423493367999981,41.53700445000004],[-8.42354979299995,41.53672205700008],[-8.423428556999966,41.53637241800004],[-8.42336921499998,41.53619154000006],[-8.423452058999942,41.53614317200004],[-8.423445088999927,41.53605965100007],[-8.423365244999957,41.53600094400008],[-8.423231721999969,41.535931531000074],[-8.423084741999958,41.53581685900008],[-8.422726754999928,41.53554174400006],[-8.42066161699995,41.534307642000044],[-8.419889558999955,41.53385018700004],[-8.41961347299997,41.53352825200005],[-8.419449475999954,41.533146970000075],[-8.41809169499993,41.528959314000076],[-8.417879923999976,41.52825885800007],[-8.41783569599994,41.528038106000054],[-8.41802372099994,41.52703403000004],[-8.418288373999928,41.525697742000034],[-8.418352543999958,41.525591217000056],[-8.41834375999997,41.52549080800003],[-8.418743732999928,41.52401745600008],[-8.419073197999978,41.52274936500004],[-8.42002366099996,41.51881418900007],[-8.420132055999943,41.51790133700007],[-8.42020185399997,41.51735466800005],[-8.420291004999967,41.51669175300003],[-8.42046311699994,41.516311597000026],[-8.42062533199993,41.51603817900008],[-8.420818003999955,41.51573565800004],[-8.420907411999963,41.51548985100004],[-8.420923561999928,41.51521809700006],[-8.420831805999967,41.514790521000066],[-8.420561931999941,41.51404884300007],[-8.419966508999948,41.51249920400005],[-8.419923598999958,41.51235110600004],[-8.419910340999934,41.51220844200003],[-8.419963189999976,41.51213143900003],[-8.42018320099993,41.511938335000025],[-8.420813409999937,41.51135615800007],[-8.421023633999937,41.51113109900007],[-8.421039932999975,41.51094311300005],[-8.42088556699997,41.51028633400006],[-8.420844872999965,41.509838493000075],[-8.420830473999956,41.50968107800003],[-8.421575466999968,41.50871159800005],[-8.421693294999955,41.50862300700004],[-8.423002119999978,41.50835561700006],[-8.424414593999927,41.508086854000055],[-8.42692515999994,41.50770295400008],[-8.427464950999934,41.50762804400006],[-8.428202431999978,41.50769701300004],[-8.429848350999976,41.507882093000035],[-8.430714795999961,41.507868865000034],[-8.431926291999957,41.50782442700006],[-8.43227853999997,41.50785160100003],[-8.433565012999964,41.50810880200004],[-8.433613264999963,41.50822831700003],[-8.43366230099997,41.50834352500004],[-8.433775037999965,41.508398396000075],[-8.433874362999973,41.50839842200003]],"outB":[[-8.433874362999973,41.50839842200003],[-8.433874362999973,41.50839842200003],[-8.433970932999955,41.50833582700005],[-8.434049375999962,41.50824741000008],[-8.434351926999966,41.50823583700003],[-8.43497277299997,41.50831231700005],[-8.43732819099995,41.50855267000003],[-8.43771727099994,41.50861384400008],[-8.438058474999934,41.508734995000054],[-8.438634143999934,41.509073975000035],[-8.439160511999944,41.50932841700006],[-8.43981256799998,41.509488815000054],[-8.440653766999958,41.50958624800006],[-8.440991384999961,41.50949368900007],[-8.441262735999942,41.50930817900007],[-8.441472766999937,41.50916294900003],[-8.44185680499993,41.509041299000046],[-8.44223260299998,41.50904451200006],[-8.445615643999929,41.509461126000076],[-8.446102955999947,41.509579228000064],[-8.447809752999945,41.51037429400003],[-8.450284686999964,41.51156150800006],[-8.450995233999947,41.51189795600004],[-8.451077724999948,41.51200029300003],[-8.451241367999955,41.51207327700007],[-8.451350917999946,41.51207008400007],[-8.452526274999968,41.51268677000007],[-8.453127816999938,41.51301955300005],[-8.453522220999957,41.51322725800003],[-8.45367478299994,41.51334617800006],[-8.45392316699997,41.51364106300008],[-8.454227754999977,41.51399117100004],[-8.454521700999976,41.514191545000074],[-8.455584274999978,41.51480864300004],[-8.455718925999975,41.514820145000044],[-8.455835864999926,41.51475543300006],[-8.456085434999977,41.51457337200003],[-8.456308203999981,41.51439651600003],[-8.456446146999951,41.51429198100004],[-8.456413417999954,41.514204197000026],[-8.456306667999968,41.51420467400004],[-8.456200493999972,41.51427709200004],[-8.456031036999946,41.51444571600007]],"backA":[[-8.456008465999957,41.514495425000064],[-8.455867310999963,41.51460865000007],[-8.45569060899993,41.51475923000004],[-8.455612407999979,41.51479695900008],[-8.455367376999959,41.51465630100006],[-8.455259197999965,41.51458982500003],[-8.45427572999995,41.51399616300006],[-8.45393140699997,41.51355770400005],[-8.453705554999942,41.513321001000065],[-8.453187034999928,41.51302701800006],[-8.452448439999955,41.51261681400007],[-8.451679604999981,41.51221295500005],[-8.451409532999946,41.51204682600007],[-8.451302290999934,41.51189552400007],[-8.451144144999944,41.51181442600006],[-8.450960284999951,41.51182388900003],[-8.450202335999961,41.511471088000064],[-8.448013206999974,41.510440241000026],[-8.446155361999956,41.509556393000025],[-8.445516324999971,41.509417373000076],[-8.44214595799997,41.50900586200004],[-8.441851762999931,41.50898804500008],[-8.441555859999937,41.509070343000076],[-8.441277166999953,41.509228491000044],[-8.440963095999962,41.50946289400008],[-8.440756482999973,41.509542440000075],[-8.43984689399997,41.50945485900007],[-8.439118401999963,41.50925450900007],[-8.43869015499996,41.50906143100008],[-8.438116266999941,41.50873595500008],[-8.437519591999944,41.50854560700003],[-8.43548685199994,41.50832520100005],[-8.434103870999934,41.50819603000008]],"backB":[[-8.434103870999934,41.50819603000008],[-8.434103870999934,41.50819603000008],[-8.43392425899998,41.508110799000065],[-8.433775039999944,41.508085176000066],[-8.433706849999965,41.50807787800005],[-8.43352594299995,41.50806692400005],[-8.432224085999962,41.50782649800004],[-8.430718772999967,41.50785740500004],[-8.429812408999965,41.50786743500004],[-8.428131809999968,41.50770288800004],[-8.427423861999955,41.50760658200005],[-8.426805811999941,41.50770849700007],[-8.42442626899998,41.50804036300008],[-8.423482475999947,41.50821171000007],[-8.42171349299997,41.508564326000055],[-8.42144000199994,41.50878436900007],[-8.421130412999958,41.50922204200003],[-8.420812075999947,41.50964775500006],[-8.420784487999981,41.51001732200007],[-8.420803601999978,41.51031393400007],[-8.420964376999962,41.51102500700006],[-8.420708116999947,41.51137328500005],[-8.419996709999964,41.512030364000054],[-8.419851656999981,41.51201261600005],[-8.41969764099997,41.51202141300007],[-8.419620786999928,41.51214237800008],[-8.41969944899995,41.51224495500003],[-8.419797721999942,41.51227020400006],[-8.41985806599996,41.51240971400006],[-8.420058172999973,41.51289752800005],[-8.42033754099998,41.51362153700006],[-8.420793060999927,41.514840476000074],[-8.420868179999957,41.515223158000026],[-8.420790817999944,41.51571829900007],[-8.420357941999953,41.51638824200006],[-8.420245657999942,41.51668710700005],[-8.420163814999967,41.517200959000036],[-8.420113567999977,41.51754306400005],[-8.419861956999966,41.51929834600003],[-8.419336459999954,41.521346736000055],[-8.419011890999968,41.522574838000025],[-8.41837561099993,41.52524622000004],[-8.418209052999941,41.52550024800007],[-8.418108588999928,41.52555448500004],[-8.418117525999946,41.52563405700005],[-8.418207903999928,41.525725081000076],[-8.418252614999972,41.525831854000046],[-8.417938167999978,41.52711397500008],[-8.417765548999967,41.528058900000076],[-8.417902568999978,41.528503975000035],[-8.418114180999964,41.52921222800006],[-8.419219667999926,41.53267413900005],[-8.419425773999933,41.533303372000034],[-8.41962683099996,41.53362632100004],[-8.419857987999933,41.53387337500004],[-8.421907695999948,41.53509150200006],[-8.42299342399997,41.53581078000008],[-8.423143703999926,41.536004596000055],[-8.423202475999972,41.536144457000034],[-8.423280509999927,41.536259236000035],[-8.423456898999973,41.536720452000054],[-8.423418040999934,41.53696938100006],[-8.42310393699995,41.53747062000008],[-8.422814003999974,41.53788211500006],[-8.422402107999972,41.53803606100007],[-8.42200636399997,41.538030151000044],[-8.420555019999938,41.53754859600008],[-8.42017892399997,41.537564373000066],[-8.41958597599995,41.53787328300007],[-8.418482462999975,41.53856052700007],[-8.418384051999965,41.53852978100008],[-8.418275773999937,41.53854727400005],[-8.418222837999963,41.53860910800006],[-8.418223603999934,41.53868980300007],[-8.41831581599996,41.53879029700005],[-8.418890688999966,41.54034216000008],[-8.418891065999958,41.54057567500007],[-8.418700608999927,41.540811217000055],[-8.417634976999977,41.54188999000007],[-8.417563094999934,41.54196130200006],[-8.417538513999943,41.54201094900003],[-8.417540303999942,41.54211642100006],[-8.417608110999936,41.54218645800006],[-8.419251638999981,41.54500117100008],[-8.419727595999973,41.54585825000004],[-8.41914298699993,41.546101219000036],[-8.418675350999933,41.546365716000025],[-8.418223534999981,41.54678577400006],[-8.417830358999936,41.54721941100007],[-8.416751777999934,41.54823910300007],[-8.41628262699993,41.548479515000054],[-8.415814292999926,41.54876655100003],[-8.415488865999976,41.54890824900008],[-8.415502961999948,41.54901672200003],[-8.416167998999981,41.549985958000036],[-8.416813916999956,41.550901665000026],[-8.417315542999972,41.55161925400006],[-8.41778902699997,41.55115252100006],[-8.418341999999939,41.55080417400006],[-8.419206858999928,41.550303419000045],[-8.420038748999957,41.54986971500006]],"outFull":[[-8.421248945999935,41.54929101300007],[-8.42168858599996,41.54892285200003],[-8.41968095599998,41.54559001300004],[-8.417816236999954,41.542328817000055],[-8.41775976599996,41.542172304000076],[-8.417785485999957,41.54203756800007],[-8.417824416999963,41.541843938000056],[-8.418751258999976,41.54089460600005],[-8.418993410999974,41.54059083800007],[-8.419037764999928,41.540460462000055],[-8.41899699399994,41.54028337900007],[-8.418565172999934,41.53912918700007],[-8.418492611999966,41.53874202700007],[-8.418533156999956,41.538605723000046],[-8.419325818999937,41.53811146800007],[-8.41985510099994,41.53778238700005],[-8.42007803499996,41.53767383500008],[-8.420351387999972,41.537595182000075],[-8.420647233999944,41.53761909000008],[-8.421385095999938,41.53787497700006],[-8.422068606999972,41.53811470100004],[-8.422508415999971,41.53808223200008],[-8.422869310999943,41.53788922200005],[-8.423240825999926,41.53738122000004],[-8.423493367999981,41.53700445000004],[-8.42354979299995,41.53672205700008],[-8.423428556999966,41.53637241800004],[-8.42336921499998,41.53619154000006],[-8.423452058999942,41.53614317200004],[-8.423445088999927,41.53605965100007],[-8.423365244999957,41.53600094400008],[-8.423231721999969,41.535931531000074],[-8.423084741999958,41.53581685900008],[-8.422726754999928,41.53554174400006],[-8.42066161699995,41.534307642000044],[-8.419889558999955,41.53385018700004],[-8.41961347299997,41.53352825200005],[-8.419449475999954,41.533146970000075],[-8.41809169499993,41.528959314000076],[-8.417879923999976,41.52825885800007],[-8.41783569599994,41.528038106000054],[-8.41802372099994,41.52703403000004],[-8.418288373999928,41.525697742000034],[-8.418352543999958,41.525591217000056],[-8.41834375999997,41.52549080800003],[-8.418743732999928,41.52401745600008],[-8.419073197999978,41.52274936500004],[-8.42002366099996,41.51881418900007],[-8.420132055999943,41.51790133700007],[-8.42020185399997,41.51735466800005],[-8.420291004999967,41.51669175300003],[-8.42046311699994,41.516311597000026],[-8.42062533199993,41.51603817900008],[-8.420818003999955,41.51573565800004],[-8.420907411999963,41.51548985100004],[-8.420923561999928,41.51521809700006],[-8.420831805999967,41.514790521000066],[-8.420561931999941,41.51404884300007],[-8.419966508999948,41.51249920400005],[-8.419923598999958,41.51235110600004],[-8.419910340999934,41.51220844200003],[-8.419963189999976,41.51213143900003],[-8.42018320099993,41.511938335000025],[-8.420813409999937,41.51135615800007],[-8.421023633999937,41.51113109900007],[-8.421039932999975,41.51094311300005],[-8.42088556699997,41.51028633400006],[-8.420844872999965,41.509838493000075],[-8.420830473999956,41.50968107800003],[-8.421575466999968,41.50871159800005],[-8.421693294999955,41.50862300700004],[-8.423002119999978,41.50835561700006],[-8.424414593999927,41.508086854000055],[-8.42692515999994,41.50770295400008],[-8.427464950999934,41.50762804400006],[-8.428202431999978,41.50769701300004],[-8.429848350999976,41.507882093000035],[-8.430714795999961,41.507868865000034],[-8.431926291999957,41.50782442700006],[-8.43227853999997,41.50785160100003],[-8.433565012999964,41.50810880200004],[-8.433613264999963,41.50822831700003],[-8.43366230099997,41.50834352500004],[-8.433775037999965,41.508398396000075],[-8.433874362999973,41.50839842200003],[-8.433970932999955,41.50833582700005],[-8.434049375999962,41.50824741000008],[-8.434351926999966,41.50823583700003],[-8.43497277299997,41.50831231700005],[-8.43732819099995,41.50855267000003],[-8.43771727099994,41.50861384400008],[-8.438058474999934,41.508734995000054],[-8.438634143999934,41.509073975000035],[-8.439160511999944,41.50932841700006],[-8.43981256799998,41.509488815000054],[-8.440653766999958,41.50958624800006],[-8.440991384999961,41.50949368900007],[-8.441262735999942,41.50930817900007],[-8.441472766999937,41.50916294900003],[-8.44185680499993,41.509041299000046],[-8.44223260299998,41.50904451200006],[-8.445615643999929,41.509461126000076],[-8.446102955999947,41.509579228000064],[-8.447809752999945,41.51037429400003],[-8.450284686999964,41.51156150800006],[-8.450995233999947,41.51189795600004],[-8.451077724999948,41.51200029300003],[-8.451241367999955,41.51207327700007],[-8.451350917999946,41.51207008400007],[-8.452526274999968,41.51268677000007],[-8.453127816999938,41.51301955300005],[-8.453522220999957,41.51322725800003],[-8.45367478299994,41.51334617800006],[-8.45392316699997,41.51364106300008],[-8.454227754999977,41.51399117100004],[-8.454521700999976,41.514191545000074],[-8.455584274999978,41.51480864300004],[-8.455718925999975,41.514820145000044],[-8.455835864999926,41.51475543300006],[-8.456085434999977,41.51457337200003],[-8.456308203999981,41.51439651600003],[-8.456446146999951,41.51429198100004],[-8.456413417999954,41.514204197000026],[-8.456306667999968,41.51420467400004],[-8.456200493999972,41.51427709200004],[-8.456031036999946,41.51444571600007]],"backFull":[[-8.456008465999957,41.514495425000064],[-8.455867310999963,41.51460865000007],[-8.45569060899993,41.51475923000004],[-8.455612407999979,41.51479695900008],[-8.455367376999959,41.51465630100006],[-8.455259197999965,41.51458982500003],[-8.45427572999995,41.51399616300006],[-8.45393140699997,41.51355770400005],[-8.453705554999942,41.513321001000065],[-8.453187034999928,41.51302701800006],[-8.452448439999955,41.51261681400007],[-8.451679604999981,41.51221295500005],[-8.451409532999946,41.51204682600007],[-8.451302290999934,41.51189552400007],[-8.451144144999944,41.51181442600006],[-8.450960284999951,41.51182388900003],[-8.450202335999961,41.511471088000064],[-8.448013206999974,41.510440241000026],[-8.446155361999956,41.509556393000025],[-8.445516324999971,41.509417373000076],[-8.44214595799997,41.50900586200004],[-8.441851762999931,41.50898804500008],[-8.441555859999937,41.509070343000076],[-8.441277166999953,41.509228491000044],[-8.440963095999962,41.50946289400008],[-8.440756482999973,41.509542440000075],[-8.43984689399997,41.50945485900007],[-8.439118401999963,41.50925450900007],[-8.43869015499996,41.50906143100008],[-8.438116266999941,41.50873595500008],[-8.437519591999944,41.50854560700003],[-8.43548685199994,41.50832520100005],[-8.434103870999934,41.50819603000008],[-8.43392425899998,41.508110799000065],[-8.433775039999944,41.508085176000066],[-8.433706849999965,41.50807787800005],[-8.43352594299995,41.50806692400005],[-8.432224085999962,41.50782649800004],[-8.430718772999967,41.50785740500004],[-8.429812408999965,41.50786743500004],[-8.428131809999968,41.50770288800004],[-8.427423861999955,41.50760658200005],[-8.426805811999941,41.50770849700007],[-8.42442626899998,41.50804036300008],[-8.423482475999947,41.50821171000007],[-8.42171349299997,41.508564326000055],[-8.42144000199994,41.50878436900007],[-8.421130412999958,41.50922204200003],[-8.420812075999947,41.50964775500006],[-8.420784487999981,41.51001732200007],[-8.420803601999978,41.51031393400007],[-8.420964376999962,41.51102500700006],[-8.420708116999947,41.51137328500005],[-8.419996709999964,41.512030364000054],[-8.419851656999981,41.51201261600005],[-8.41969764099997,41.51202141300007],[-8.419620786999928,41.51214237800008],[-8.41969944899995,41.51224495500003],[-8.419797721999942,41.51227020400006],[-8.41985806599996,41.51240971400006],[-8.420058172999973,41.51289752800005],[-8.42033754099998,41.51362153700006],[-8.420793060999927,41.514840476000074],[-8.420868179999957,41.515223158000026],[-8.420790817999944,41.51571829900007],[-8.420357941999953,41.51638824200006],[-8.420245657999942,41.51668710700005],[-8.420163814999967,41.517200959000036],[-8.420113567999977,41.51754306400005],[-8.419861956999966,41.51929834600003],[-8.419336459999954,41.521346736000055],[-8.419011890999968,41.522574838000025],[-8.41837561099993,41.52524622000004],[-8.418209052999941,41.52550024800007],[-8.418108588999928,41.52555448500004],[-8.418117525999946,41.52563405700005],[-8.418207903999928,41.525725081000076],[-8.418252614999972,41.525831854000046],[-8.417938167999978,41.52711397500008],[-8.417765548999967,41.528058900000076],[-8.417902568999978,41.528503975000035],[-8.418114180999964,41.52921222800006],[-8.419219667999926,41.53267413900005],[-8.419425773999933,41.533303372000034],[-8.41962683099996,41.53362632100004],[-8.419857987999933,41.53387337500004],[-8.421907695999948,41.53509150200006],[-8.42299342399997,41.53581078000008],[-8.423143703999926,41.536004596000055],[-8.423202475999972,41.536144457000034],[-8.423280509999927,41.536259236000035],[-8.423456898999973,41.536720452000054],[-8.423418040999934,41.53696938100006],[-8.42310393699995,41.53747062000008],[-8.422814003999974,41.53788211500006],[-8.422402107999972,41.53803606100007],[-8.42200636399997,41.538030151000044],[-8.420555019999938,41.53754859600008],[-8.42017892399997,41.537564373000066],[-8.41958597599995,41.53787328300007],[-8.418482462999975,41.53856052700007],[-8.418384051999965,41.53852978100008],[-8.418275773999937,41.53854727400005],[-8.418222837999963,41.53860910800006],[-8.418223603999934,41.53868980300007],[-8.41831581599996,41.53879029700005],[-8.418890688999966,41.54034216000008],[-8.418891065999958,41.54057567500007],[-8.418700608999927,41.540811217000055],[-8.417634976999977,41.54188999000007],[-8.417563094999934,41.54196130200006],[-8.417538513999943,41.54201094900003],[-8.417540303999942,41.54211642100006],[-8.417608110999936,41.54218645800006],[-8.419251638999981,41.54500117100008],[-8.419727595999973,41.54585825000004],[-8.41914298699993,41.546101219000036],[-8.418675350999933,41.546365716000025],[-8.418223534999981,41.54678577400006],[-8.417830358999936,41.54721941100007],[-8.416751777999934,41.54823910300007],[-8.41628262699993,41.548479515000054],[-8.415814292999926,41.54876655100003],[-8.415488865999976,41.54890824900008],[-8.415502961999948,41.54901672200003],[-8.416167998999981,41.549985958000036],[-8.416813916999956,41.550901665000026],[-8.417315542999972,41.55161925400006],[-8.41778902699997,41.55115252100006],[-8.418341999999939,41.55080417400006],[-8.419206858999928,41.550303419000045],[-8.420038748999957,41.54986971500006]]},"101":{"outA":[[-8.421286173999931,41.549275944000044],[-8.421671505999939,41.54900515000003],[-8.418700311999942,41.543820262000054],[-8.419860226999958,41.54354626200006],[-8.420617642999957,41.54495112500007],[-8.425477975999968,41.54377122300008],[-8.425217024999938,41.54217794200008],[-8.425351147999947,41.54161830600003],[-8.425817233999965,41.54105726900008],[-8.426452720999976,41.54095105400006],[-8.427087427999936,41.54074130500004],[-8.427389390999963,41.54042942800004],[-8.42777231499997,41.53984801900003],[-8.428648962999944,41.53870541800006],[-8.429001092999954,41.53770997600003],[-8.429462779999938,41.53656909600005],[-8.429575819999968,41.53581772500007],[-8.42985608999993,41.53446835300008],[-8.430063836999977,41.53377163000005],[-8.429921471999933,41.53287343800008],[-8.429685579999955,41.532410543000026],[-8.42937343799997,41.53210743500006],[-8.42865441999993,41.531777058000046],[-8.428169753999953,41.53170662700006],[-8.427800183999977,41.53149073800006],[-8.427448339999955,41.531057315000055],[-8.42689816799998,41.530002283000044],[-8.42677936299998,41.52965486800008],[-8.427007795999941,41.52913202900004],[-8.427333043999965,41.528608778000034],[-8.427735740999935,41.52808519800004],[-8.427906291999932,41.52759159000004],[-8.427920402999973,41.526895688000025],[-8.428053208999927,41.52653270600007],[-8.430414023999958,41.52387267100005],[-8.430836687999943,41.52343597600003],[-8.431357588999958,41.52318731500003],[-8.431820400999925,41.52293890000004],[-8.432032057999947,41.52276403700006],[-8.43220437499997,41.52245098900005],[-8.432337874999973,41.522062177000066],[-8.432634653999969,41.52161136700005],[-8.433041215999936,41.521241822000036],[-8.433475219999934,41.52089259100006],[-8.433773857999938,41.52068697500005],[-8.433990153999957,41.52042041000004],[-8.434204886999964,41.51994951300003],[-8.43431107999993,41.51956081600008],[-8.434077607999939,41.51757973100007],[-8.43404703899995,41.51715074800006],[-8.434208901999966,41.516904845000056],[-8.43409178099995,41.51586320400003],[-8.43397747399996,41.51518936000008],[-8.43402939799995,41.51484175100006],[-8.434217763999925,41.51449355500006],[-8.434325972999943,41.51416544700004],[-8.43448288899998,41.51395706400007],[-8.434379401999934,41.51337889100006],[-8.434074502999977,41.51237133200004],[-8.433909883999945,41.51157088200006],[-8.433880208999938,41.51028026000006],[-8.433830606999948,41.508974884000054],[-8.433843811273787,41.508751487301694]],"outB":[[-8.433843811273787,41.508751487301694],[-8.433865692999973,41.50838128100003],[-8.433903462999979,41.50780769600004],[-8.434328096999934,41.50740550900008],[-8.434715449999942,41.50678995200008],[-8.434993213999974,41.50582788000003],[-8.434982575999982,41.504439984000044],[-8.43518340099996,41.50276177300003],[-8.435241659999974,41.50171995000005],[-8.435266860999945,41.50162669300005],[-8.435194854999963,41.50151477000003],[-8.435351287999936,41.50015037000003],[-8.435554705999948,41.499572466000075],[-8.435689999999965,41.499129641000025],[-8.43567909899997,41.49876256300007],[-8.435486002999937,41.49838422500005],[-8.43414792699997,41.496405449000065],[-8.434100616999956,41.49628312900006],[-8.434007573999963,41.49607776700003],[-8.433195718999968,41.49341785200005],[-8.433020408999937,41.49289812400008],[-8.432563562999974,41.49136131600005],[-8.432589262999954,41.49120355200006],[-8.432665492999945,41.49108884000003],[-8.432665874999941,41.49097728600003],[-8.433036648999973,41.49067897100008],[-8.433535614999926,41.49036079100006],[-8.434792589999972,41.49018648800006],[-8.436179936999963,41.48997727600005],[-8.436523142999931,41.48987118600007],[-8.436817626999925,41.48964449600004],[-8.437381117999962,41.489314526000044],[-8.437891054999966,41.48879843000003],[-8.438424353999949,41.48829162800007],[-8.439274633999958,41.48778983400007],[-8.441349720999938,41.48618598100006],[-8.442384322999942,41.485698237000065],[-8.442896727999937,41.485181762000025],[-8.44326362399994,41.48486184800004],[-8.444181154999967,41.48449136900007],[-8.444516933999978,41.48427157800006],[-8.44467740999994,41.48409530600003],[-8.444790595999962,41.48386677900004],[-8.444794555999977,41.483629421000046],[-8.444726990999925,41.48333678400007],[-8.444746563999956,41.48317899600005],[-8.444837184999926,41.483040293000045],[-8.445059042999958,41.48293087800005],[-8.445696114999976,41.48272815100006],[-8.446319461999963,41.48235793500004],[-8.446565497999927,41.48215141400004],[-8.446757140999978,41.48198942700003]],"backA":[[-8.446438199999932,41.482024780000074],[-8.446389775999933,41.48218850300003],[-8.44565397599996,41.48270676100003],[-8.444927384999971,41.48293409000007],[-8.444763248999948,41.48306884700003],[-8.444691425999963,41.48322950600004],[-8.444735869999931,41.483474820000026],[-8.44474514899997,41.48380022600003],[-8.444627984999954,41.484061205000046],[-8.444386506999933,41.484323123000024],[-8.444022874999973,41.48454205400003],[-8.443170076999934,41.48488335300004],[-8.442835535999961,41.48518538500008],[-8.442325361999963,41.48567237100008],[-8.441412381999953,41.48608298000005],[-8.44022023599996,41.487017629000036],[-8.439225355999952,41.487754745000075],[-8.438711916999978,41.48807311100006],[-8.438416184999937,41.48824857500006],[-8.437357324999937,41.48923741500005],[-8.437116947999925,41.48941725100008],[-8.436749576999944,41.489659404000065],[-8.436590313999943,41.48977307300004],[-8.43638791099994,41.489889160000075],[-8.436097139999958,41.48996489700005],[-8.433605729999954,41.49032034800007],[-8.433325812999954,41.49042939900005],[-8.432678500999941,41.49087351600008],[-8.432552906999945,41.49096296700003],[-8.432465487999934,41.49097269500004],[-8.432397616999936,41.491032285000074],[-8.432416477999936,41.491125053000076],[-8.43249026999996,41.491227708000054],[-8.432494979999944,41.49134387200007],[-8.432674797999937,41.49197700900004],[-8.43304429899996,41.49317609000008],[-8.433514984999931,41.494663659000025],[-8.43400907399996,41.496247725000046],[-8.434072941999943,41.49638171300006],[-8.435409790999927,41.49839339600004],[-8.435543159999952,41.498592501000076],[-8.435649596999951,41.49888118800004],[-8.435655489999931,41.49907151200006],[-8.43560109699996,41.49927074100003],[-8.435500004999938,41.49950393300003],[-8.435389869999938,41.499722715000075],[-8.43526929899997,41.500109053000074],[-8.435198095999965,41.50060551000007],[-8.435100549999959,41.50129151500005],[-8.435082368999929,41.501532531000066],[-8.435034445999975,41.501578566000035],[-8.435025698999937,41.50165252200003],[-8.435109412999964,41.501703098000064],[-8.435162734999949,41.50180447500003],[-8.435201115999973,41.50193963600003],[-8.435193374999926,41.50246382200004],[-8.434997844999941,41.50442554400007],[-8.434849148999945,41.505843576000075],[-8.434792112999958,41.50636793500007],[-8.434642593999968,41.50682974600005],[-8.43392260099995,41.507773275000034],[-8.43386129299995,41.50808306000005],[-8.433727690999945,41.50809505900003],[-8.43362476599998,41.508184354000036],[-8.433650915999976,41.50832594600007],[-8.43382928099993,41.50842430400007],[-8.433893566999927,41.50858689800003],[-8.433898717894898,41.508754615909645]],"backB":[[-8.433898717894898,41.508754615909645],[-8.433944628999939,41.51024952400007],[-8.433949949999942,41.51156936900003],[-8.43395979099995,41.51210216800007],[-8.434411851999926,41.51349719800004],[-8.434474871999953,41.51376212200006],[-8.434325972999943,41.51416544700004],[-8.434219033999966,41.51433722300004],[-8.434111850999955,41.51437860000004],[-8.43407002899994,41.51445831500007],[-8.43407419099998,41.514600130000076],[-8.433988449999958,41.51484633800004],[-8.433991707999951,41.514995621000025],[-8.43409178099995,41.51586320400003],[-8.434185062999973,41.51670184200003],[-8.434098740999957,41.51707255700006],[-8.434017883999957,41.51730278400004],[-8.43430206499994,41.51954025400005],[-8.433808295999938,41.52053158700005],[-8.433642239999926,41.52076421800007],[-8.433475219999934,41.52089259100006],[-8.432805720999966,41.52138435400008],[-8.432520660999955,41.521677734000036],[-8.43228824199997,41.52209308100004],[-8.432088147999934,41.52247124500008],[-8.431918904999975,41.52278823000006],[-8.431687886999953,41.52297148500003],[-8.431357588999958,41.52318731500003],[-8.430839638999942,41.523464888000035],[-8.430414023999958,41.52387267100005],[-8.428053208999927,41.52653270600007],[-8.427920402999973,41.526895688000025],[-8.427806163999946,41.52780659900003],[-8.427739560999953,41.52811149200005],[-8.427281301999926,41.52863614300003],[-8.426923749999958,41.52910235300004],[-8.42670473499993,41.529542708000065],[-8.42674898699994,41.52977931600003],[-8.427374546999943,41.53094120600008],[-8.427683701999968,41.53148667500005],[-8.427715839999962,41.53160414200005],[-8.42777790699995,41.53166393300006],[-8.427935624999975,41.531689124000025],[-8.428183855999976,41.53175824500005],[-8.428796192999926,41.53192433600003],[-8.429236765999974,41.53207400600007],[-8.429540845999952,41.53228818100007],[-8.429732541999954,41.532567519000054],[-8.430036969999946,41.53349252600003],[-8.43007819199994,41.53374295300006],[-8.429631111999981,41.53508325100006],[-8.429448468999965,41.53630217400007],[-8.429210609999927,41.53726027300007],[-8.429084753999973,41.53767559100004],[-8.428510449999976,41.53869577900008],[-8.427957155999934,41.53937932100007],[-8.427634384999976,41.539812177000044],[-8.42740850599995,41.54027010300007],[-8.427138881999952,41.54062355600007],[-8.426785141999972,41.54077733200006],[-8.425757438999938,41.541049368000074],[-8.425412493999943,41.54124063100005],[-8.425262019999934,41.54146169200004],[-8.425232482999945,41.54175366700008],[-8.42527557699998,41.54218040600006],[-8.424070210999957,41.54244897600006],[-8.42171110399994,41.54302103600003],[-8.419789082999955,41.54350607400005],[-8.41865267299994,41.54376578600005],[-8.417771338999955,41.542209531000026],[-8.41777009599997,41.54208732600006],[-8.417779388999975,41.54200922800004],[-8.417715406999946,41.54195903400006],[-8.417602010999929,41.541956354000035],[-8.417550146999929,41.54203313800008],[-8.417631194999956,41.54222692500008],[-8.418125017999955,41.54309078600005],[-8.419776633999959,41.54585985700004],[-8.418611254999973,41.546461125000064],[-8.418136656999934,41.546933832000036],[-8.416773023999951,41.548225622000075],[-8.416529006999951,41.54841194000005],[-8.415458900999965,41.54890845400007],[-8.417244099999948,41.55165851100003],[-8.417728033999936,41.55113578100003],[-8.418946804999962,41.55045536100005],[-8.419883329999948,41.549957016000064]],"outFull":[[-8.421286173999931,41.549275944000044],[-8.421671505999939,41.54900515000003],[-8.418700311999942,41.543820262000054],[-8.419860226999958,41.54354626200006],[-8.420617642999957,41.54495112500007],[-8.425477975999968,41.54377122300008],[-8.425217024999938,41.54217794200008],[-8.425351147999947,41.54161830600003],[-8.425817233999965,41.54105726900008],[-8.426452720999976,41.54095105400006],[-8.427087427999936,41.54074130500004],[-8.427389390999963,41.54042942800004],[-8.42777231499997,41.53984801900003],[-8.428648962999944,41.53870541800006],[-8.429001092999954,41.53770997600003],[-8.429462779999938,41.53656909600005],[-8.429575819999968,41.53581772500007],[-8.42985608999993,41.53446835300008],[-8.430063836999977,41.53377163000005],[-8.429921471999933,41.53287343800008],[-8.429685579999955,41.532410543000026],[-8.42937343799997,41.53210743500006],[-8.42865441999993,41.531777058000046],[-8.428169753999953,41.53170662700006],[-8.427800183999977,41.53149073800006],[-8.427448339999955,41.531057315000055],[-8.42689816799998,41.530002283000044],[-8.42677936299998,41.52965486800008],[-8.427007795999941,41.52913202900004],[-8.427333043999965,41.528608778000034],[-8.427735740999935,41.52808519800004],[-8.427906291999932,41.52759159000004],[-8.427920402999973,41.526895688000025],[-8.428053208999927,41.52653270600007],[-8.430414023999958,41.52387267100005],[-8.430836687999943,41.52343597600003],[-8.431357588999958,41.52318731500003],[-8.431820400999925,41.52293890000004],[-8.432032057999947,41.52276403700006],[-8.43220437499997,41.52245098900005],[-8.432337874999973,41.522062177000066],[-8.432634653999969,41.52161136700005],[-8.433041215999936,41.521241822000036],[-8.433475219999934,41.52089259100006],[-8.433773857999938,41.52068697500005],[-8.433990153999957,41.52042041000004],[-8.434204886999964,41.51994951300003],[-8.43431107999993,41.51956081600008],[-8.434077607999939,41.51757973100007],[-8.43404703899995,41.51715074800006],[-8.434208901999966,41.516904845000056],[-8.43409178099995,41.51586320400003],[-8.43397747399996,41.51518936000008],[-8.43402939799995,41.51484175100006],[-8.434217763999925,41.51449355500006],[-8.434325972999943,41.51416544700004],[-8.43448288899998,41.51395706400007],[-8.434379401999934,41.51337889100006],[-8.434074502999977,41.51237133200004],[-8.433909883999945,41.51157088200006],[-8.433880208999938,41.51028026000006],[-8.433830606999948,41.508974884000054],[-8.433865692999973,41.50838128100003],[-8.433903462999979,41.50780769600004],[-8.434328096999934,41.50740550900008],[-8.434715449999942,41.50678995200008],[-8.434993213999974,41.50582788000003],[-8.434982575999982,41.504439984000044],[-8.43518340099996,41.50276177300003],[-8.435241659999974,41.50171995000005],[-8.435266860999945,41.50162669300005],[-8.435194854999963,41.50151477000003],[-8.435351287999936,41.50015037000003],[-8.435554705999948,41.499572466000075],[-8.435689999999965,41.499129641000025],[-8.43567909899997,41.49876256300007],[-8.435486002999937,41.49838422500005],[-8.43414792699997,41.496405449000065],[-8.434100616999956,41.49628312900006],[-8.434007573999963,41.49607776700003],[-8.433195718999968,41.49341785200005],[-8.433020408999937,41.49289812400008],[-8.432563562999974,41.49136131600005],[-8.432589262999954,41.49120355200006],[-8.432665492999945,41.49108884000003],[-8.432665874999941,41.49097728600003],[-8.433036648999973,41.49067897100008],[-8.433535614999926,41.49036079100006],[-8.434792589999972,41.49018648800006],[-8.436179936999963,41.48997727600005],[-8.436523142999931,41.48987118600007],[-8.436817626999925,41.48964449600004],[-8.437381117999962,41.489314526000044],[-8.437891054999966,41.48879843000003],[-8.438424353999949,41.48829162800007],[-8.439274633999958,41.48778983400007],[-8.441349720999938,41.48618598100006],[-8.442384322999942,41.485698237000065],[-8.442896727999937,41.485181762000025],[-8.44326362399994,41.48486184800004],[-8.444181154999967,41.48449136900007],[-8.444516933999978,41.48427157800006],[-8.44467740999994,41.48409530600003],[-8.444790595999962,41.48386677900004],[-8.444794555999977,41.483629421000046],[-8.444726990999925,41.48333678400007],[-8.444746563999956,41.48317899600005],[-8.444837184999926,41.483040293000045],[-8.445059042999958,41.48293087800005],[-8.445696114999976,41.48272815100006],[-8.446319461999963,41.48235793500004],[-8.446565497999927,41.48215141400004],[-8.446757140999978,41.48198942700003]],"backFull":[[-8.446438199999932,41.482024780000074],[-8.446389775999933,41.48218850300003],[-8.44565397599996,41.48270676100003],[-8.444927384999971,41.48293409000007],[-8.444763248999948,41.48306884700003],[-8.444691425999963,41.48322950600004],[-8.444735869999931,41.483474820000026],[-8.44474514899997,41.48380022600003],[-8.444627984999954,41.484061205000046],[-8.444386506999933,41.484323123000024],[-8.444022874999973,41.48454205400003],[-8.443170076999934,41.48488335300004],[-8.442835535999961,41.48518538500008],[-8.442325361999963,41.48567237100008],[-8.441412381999953,41.48608298000005],[-8.44022023599996,41.487017629000036],[-8.439225355999952,41.487754745000075],[-8.438711916999978,41.48807311100006],[-8.438416184999937,41.48824857500006],[-8.437357324999937,41.48923741500005],[-8.437116947999925,41.48941725100008],[-8.436749576999944,41.489659404000065],[-8.436590313999943,41.48977307300004],[-8.43638791099994,41.489889160000075],[-8.436097139999958,41.48996489700005],[-8.433605729999954,41.49032034800007],[-8.433325812999954,41.49042939900005],[-8.432678500999941,41.49087351600008],[-8.432552906999945,41.49096296700003],[-8.432465487999934,41.49097269500004],[-8.432397616999936,41.491032285000074],[-8.432416477999936,41.491125053000076],[-8.43249026999996,41.491227708000054],[-8.432494979999944,41.49134387200007],[-8.432674797999937,41.49197700900004],[-8.43304429899996,41.49317609000008],[-8.433514984999931,41.494663659000025],[-8.43400907399996,41.496247725000046],[-8.434072941999943,41.49638171300006],[-8.435409790999927,41.49839339600004],[-8.435543159999952,41.498592501000076],[-8.435649596999951,41.49888118800004],[-8.435655489999931,41.49907151200006],[-8.43560109699996,41.49927074100003],[-8.435500004999938,41.49950393300003],[-8.435389869999938,41.499722715000075],[-8.43526929899997,41.500109053000074],[-8.435198095999965,41.50060551000007],[-8.435100549999959,41.50129151500005],[-8.435082368999929,41.501532531000066],[-8.435034445999975,41.501578566000035],[-8.435025698999937,41.50165252200003],[-8.435109412999964,41.501703098000064],[-8.435162734999949,41.50180447500003],[-8.435201115999973,41.50193963600003],[-8.435193374999926,41.50246382200004],[-8.434997844999941,41.50442554400007],[-8.434849148999945,41.505843576000075],[-8.434792112999958,41.50636793500007],[-8.434642593999968,41.50682974600005],[-8.43392260099995,41.507773275000034],[-8.43386129299995,41.50808306000005],[-8.433727690999945,41.50809505900003],[-8.43362476599998,41.508184354000036],[-8.433650915999976,41.50832594600007],[-8.43382928099993,41.50842430400007],[-8.433893566999927,41.50858689800003],[-8.433944628999939,41.51024952400007],[-8.433949949999942,41.51156936900003],[-8.43395979099995,41.51210216800007],[-8.434411851999926,41.51349719800004],[-8.434474871999953,41.51376212200006],[-8.434325972999943,41.51416544700004],[-8.434219033999966,41.51433722300004],[-8.434111850999955,41.51437860000004],[-8.43407002899994,41.51445831500007],[-8.43407419099998,41.514600130000076],[-8.433988449999958,41.51484633800004],[-8.433991707999951,41.514995621000025],[-8.43409178099995,41.51586320400003],[-8.434185062999973,41.51670184200003],[-8.434098740999957,41.51707255700006],[-8.434017883999957,41.51730278400004],[-8.43430206499994,41.51954025400005],[-8.433808295999938,41.52053158700005],[-8.433642239999926,41.52076421800007],[-8.433475219999934,41.52089259100006],[-8.432805720999966,41.52138435400008],[-8.432520660999955,41.521677734000036],[-8.43228824199997,41.52209308100004],[-8.432088147999934,41.52247124500008],[-8.431918904999975,41.52278823000006],[-8.431687886999953,41.52297148500003],[-8.431357588999958,41.52318731500003],[-8.430839638999942,41.523464888000035],[-8.430414023999958,41.52387267100005],[-8.428053208999927,41.52653270600007],[-8.427920402999973,41.526895688000025],[-8.427806163999946,41.52780659900003],[-8.427739560999953,41.52811149200005],[-8.427281301999926,41.52863614300003],[-8.426923749999958,41.52910235300004],[-8.42670473499993,41.529542708000065],[-8.42674898699994,41.52977931600003],[-8.427374546999943,41.53094120600008],[-8.427683701999968,41.53148667500005],[-8.427715839999962,41.53160414200005],[-8.42777790699995,41.53166393300006],[-8.427935624999975,41.531689124000025],[-8.428183855999976,41.53175824500005],[-8.428796192999926,41.53192433600003],[-8.429236765999974,41.53207400600007],[-8.429540845999952,41.53228818100007],[-8.429732541999954,41.532567519000054],[-8.430036969999946,41.53349252600003],[-8.43007819199994,41.53374295300006],[-8.429631111999981,41.53508325100006],[-8.429448468999965,41.53630217400007],[-8.429210609999927,41.53726027300007],[-8.429084753999973,41.53767559100004],[-8.428510449999976,41.53869577900008],[-8.427957155999934,41.53937932100007],[-8.427634384999976,41.539812177000044],[-8.42740850599995,41.54027010300007],[-8.427138881999952,41.54062355600007],[-8.426785141999972,41.54077733200006],[-8.425757438999938,41.541049368000074],[-8.425412493999943,41.54124063100005],[-8.425262019999934,41.54146169200004],[-8.425232482999945,41.54175366700008],[-8.42527557699998,41.54218040600006],[-8.424070210999957,41.54244897600006],[-8.42171110399994,41.54302103600003],[-8.419789082999955,41.54350607400005],[-8.41865267299994,41.54376578600005],[-8.417771338999955,41.542209531000026],[-8.41777009599997,41.54208732600006],[-8.417779388999975,41.54200922800004],[-8.417715406999946,41.54195903400006],[-8.417602010999929,41.541956354000035],[-8.417550146999929,41.54203313800008],[-8.417631194999956,41.54222692500008],[-8.418125017999955,41.54309078600005],[-8.419776633999959,41.54585985700004],[-8.418611254999973,41.546461125000064],[-8.418136656999934,41.546933832000036],[-8.416773023999951,41.548225622000075],[-8.416529006999951,41.54841194000005],[-8.415458900999965,41.54890845400007],[-8.417244099999948,41.55165851100003],[-8.417728033999936,41.55113578100003],[-8.418946804999962,41.55045536100005],[-8.419883329999948,41.549957016000064]]}},"stops":{"raio":[-8.421263931249939,41.54922249050004],"pinheiro":[-8.43392383224996,41.50875417725007],"celeiros":[-8.456031036999946,41.51444571600007],"guisande":[-8.446757140999978,41.48198942700003]},"schedules":{"current":{"18":[{"out":"07:00","terminal":"07:15","back":"07:35","kind":"base","note":""},{"out":"07:35","terminal":"07:50","back":"08:10","kind":"base","note":""},{"out":"08:10","terminal":"08:25","back":"08:50","kind":"base","note":""},{"out":"08:50","terminal":"09:05","back":"09:30","kind":"base","note":""},{"out":"09:30","terminal":"09:45","back":"10:10","kind":"base","note":""},{"out":"10:10","terminal":"10:25","back":"10:50","kind":"base","note":""},{"out":"10:50","terminal":"11:05","back":"11:30","kind":"base","note":""},{"out":"11:30","terminal":"11:45","back":"12:10","kind":"base","note":""},{"out":"12:05","terminal":"12:20","back":"12:45","kind":"special","note":"Serviço especial"},{"out":"12:30","terminal":"12:45","back":"13:10","kind":"base","note":""},{"out":"13:10","terminal":"13:25","back":"13:50","kind":"base","note":""},{"out":"13:35","terminal":"13:50","back":"14:15","kind":"special","note":"Serviço especial"},{"out":"13:50","terminal":"14:05","back":"14:30","kind":"base","note":""},{"out":"14:30","terminal":"14:45","back":"15:10","kind":"base","note":""},{"out":"15:10","terminal":"15:25","back":"15:50","kind":"base","note":""},{"out":"15:50","terminal":"16:05","back":"16:30","kind":"base","note":""},{"out":"16:30","terminal":"16:45","back":"17:05","kind":"base","note":""},{"out":"17:05","terminal":"17:20","back":"17:45","kind":"base","note":""},{"out":"17:45","terminal":"18:00","back":"18:25","kind":"base","note":""},{"out":"18:00","terminal":"18:15","back":"18:40","kind":"special","note":"Serviço especial"},{"out":"18:25","terminal":"18:45","back":"19:10","kind":"base","note":""},{"out":"19:10","terminal":"19:25","back":"19:50","kind":"base","note":""},{"out":"19:50","terminal":"20:05","back":"20:25","kind":"base","note":""},{"out":"20:25","terminal":"20:40","back":"21:00","kind":"base","note":""}],"58":[{"out":"07:05","terminal":"07:20","back":"07:40","kind":"base","note":""},{"out":null,"terminal":"07:40","back":"08:00","kind":"reinforcement","note":"Reforço"},{"out":"07:40","terminal":"07:55","back":"08:15","kind":"base","note":""},{"out":"08:15","terminal":"08:30","back":"08:55","kind":"base","note":""},{"out":"08:55","terminal":"09:10","back":"09:35","kind":"base","note":""},{"out":"09:35","terminal":"09:50","back":"10:15","kind":"base","note":""},{"out":"10:15","terminal":"10:30","back":"10:55","kind":"base","note":""},{"out":"10:55","terminal":"11:10","back":"11:35","kind":"base","note":""},{"out":"11:35","terminal":"11:50","back":"12:15","kind":"base","note":""},{"out":"12:05","terminal":"12:20","back":"12:45","kind":"reinforcement","note":"Reforço"},{"out":"12:35","terminal":"12:50","back":"13:15","kind":"base","note":""},{"out":"13:15","terminal":"13:30","back":"13:55","kind":"base","note":""},{"out":"13:55","terminal":"14:10","back":"14:35","kind":"base","note":""},{"out":"14:35","terminal":"14:50","back":"15:15","kind":"base","note":""},{"out":"15:15","terminal":"15:30","back":"15:55","kind":"base","note":""},{"out":"15:55","terminal":"16:10","back":"16:35","kind":"base","note":""},{"out":"16:35","terminal":"16:50","back":"17:10","kind":"base","note":""},{"out":"17:10","terminal":"17:25","back":"17:50","kind":"base","note":""},{"out":"17:50","terminal":"18:05","back":"18:30","kind":"base","note":""},{"out":"18:05","terminal":"18:20","back":"18:45","kind":"reinforcement","note":"Reforço"},{"out":"18:30","terminal":"18:50","back":"19:15","kind":"base","note":""},{"out":"19:15","terminal":"19:30","back":"19:55","kind":"base","note":""},{"out":"19:55","terminal":"20:10","back":"20:30","kind":"base","note":""},{"out":"20:30","terminal":"20:45","back":"21:05","kind":"base","note":""},{"out":"21:05","terminal":"21:20","back":"21:40","kind":"special","note":"Serviço especial / prolongamento"}],"97":[{"out":null,"terminal":"07:10","back":"07:40","kind":"base","note":""},{"out":"07:40","terminal":"08:10","back":"08:40","kind":"base","note":""},{"out":"08:40","terminal":"09:10","back":"09:40","kind":"base","note":""},{"out":"09:40","terminal":"10:10","back":"10:40","kind":"base","note":""},{"out":"10:40","terminal":"11:10","back":"11:40","kind":"base","note":""},{"out":"11:40","terminal":"12:10","back":"12:40","kind":"base","note":""},{"out":"12:40","terminal":"13:10","back":"13:40","kind":"base","note":""},{"out":"13:40","terminal":"14:10","back":"14:40","kind":"base","note":""},{"out":"14:40","terminal":"15:10","back":"15:40","kind":"base","note":""},{"out":"15:40","terminal":"16:10","back":"16:40","kind":"base","note":""},{"out":"16:40","terminal":"17:10","back":"17:40","kind":"base","note":""},{"out":"17:40","terminal":"18:10","back":"18:40","kind":"base","note":""},{"out":"18:40","terminal":"19:10","back":"19:40","kind":"base","note":""},{"out":"19:40","terminal":"20:10","back":null,"kind":"base","note":""}],"101":[]},"proposed":{"18":[{"out":null,"terminal":"06:50","back":"07:20","kind":"base","note":""},{"out":"07:20","terminal":"07:50","back":"08:20","kind":"base","note":""},{"out":"08:20","terminal":"08:50","back":"09:20","kind":"base","note":""},{"out":"09:20","terminal":"09:50","back":"10:20","kind":"base","note":""},{"out":"10:20","terminal":"10:50","back":"11:20","kind":"base","note":""},{"out":"11:20","terminal":"11:50","back":"12:20","kind":"base","note":""},{"out":"12:20","terminal":"12:50","back":"13:20","kind":"base","note":""},{"out":"13:20","terminal":"13:50","back":"14:20","kind":"base","note":""},{"out":"14:20","terminal":"14:50","back":"15:20","kind":"base","note":""},{"out":"15:20","terminal":"15:50","back":"16:20","kind":"base","note":""},{"out":"16:20","terminal":"16:50","back":"17:20","kind":"base","note":""},{"out":"17:20","terminal":"17:50","back":"18:20","kind":"base","note":""},{"out":"18:20","terminal":"18:50","back":"19:20","kind":"base","note":""},{"out":"19:20","terminal":"19:50","back":"20:20","kind":"base","note":""},{"out":"20:20","terminal":"20:50","back":"21:20","kind":"base","note":""}],"58":[{"out":null,"terminal":"07:00","back":"07:30","kind":"base","note":""},{"out":"07:30","terminal":"08:00","back":"08:30","kind":"base","note":""},{"out":"08:30","terminal":"09:00","back":"09:30","kind":"base","note":""},{"out":"09:30","terminal":"10:00","back":"10:30","kind":"base","note":""},{"out":"10:30","terminal":"11:00","back":"11:30","kind":"base","note":""},{"out":"11:30","terminal":"12:00","back":"12:30","kind":"base","note":""},{"out":"12:30","terminal":"13:00","back":"13:30","kind":"base","note":""},{"out":"13:30","terminal":"14:00","back":"14:30","kind":"base","note":""},{"out":"14:30","terminal":"15:00","back":"15:30","kind":"base","note":""},{"out":"15:30","terminal":"16:00","back":"16:30","kind":"base","note":""},{"out":"16:30","terminal":"17:00","back":"17:30","kind":"base","note":""},{"out":"17:30","terminal":"18:00","back":"18:30","kind":"base","note":""},{"out":"18:30","terminal":"19:00","back":"19:30","kind":"base","note":""},{"out":"19:30","terminal":"20:00","back":"20:30","kind":"base","note":""},{"out":"20:30","terminal":"21:00","back":"21:30","kind":"base","note":""}],"97":[{"out":null,"terminal":"07:10","back":"07:40","kind":"base","note":""},{"out":"07:40","terminal":"08:10","back":"08:40","kind":"base","note":""},{"out":"08:40","terminal":"09:10","back":"09:40","kind":"base","note":""},{"out":"09:40","terminal":"10:10","back":"10:40","kind":"base","note":""},{"out":"10:40","terminal":"11:10","back":"11:40","kind":"base","note":""},{"out":"11:40","terminal":"12:10","back":"12:40","kind":"base","note":""},{"out":"12:40","terminal":"13:10","back":"13:40","kind":"base","note":""},{"out":"13:40","terminal":"14:10","back":"14:40","kind":"base","note":""},{"out":"14:40","terminal":"15:10","back":"15:40","kind":"base","note":""},{"out":"15:40","terminal":"16:10","back":"16:40","kind":"base","note":""},{"out":"16:40","terminal":"17:10","back":"17:40","kind":"base","note":""},{"out":"17:40","terminal":"18:10","back":"18:40","kind":"base","note":""},{"out":"18:40","terminal":"19:10","back":"19:40","kind":"base","note":""},{"out":"19:40","terminal":"20:10","back":null,"kind":"base","note":""}],"101":[{"out":"07:00","terminal":"07:30","back":"08:00","kind":"base","note":""},{"out":"08:00","terminal":"08:30","back":"09:00","kind":"base","note":""},{"out":"09:00","terminal":"09:30","back":"10:00","kind":"base","note":""},{"out":"10:00","terminal":"10:30","back":"11:00","kind":"base","note":""},{"out":"11:00","terminal":"11:30","back":"12:00","kind":"base","note":""},{"out":"12:00","terminal":"12:30","back":"13:00","kind":"base","note":""},{"out":"13:00","terminal":"13:30","back":"14:00","kind":"base","note":""},{"out":"14:00","terminal":"14:30","back":"15:00","kind":"base","note":""},{"out":"15:00","terminal":"15:30","back":"16:00","kind":"base","note":""},{"out":"16:00","terminal":"16:30","back":"17:00","kind":"base","note":""},{"out":"17:00","terminal":"17:30","back":"18:00","kind":"base","note":""},{"out":"18:00","terminal":"18:30","back":"19:00","kind":"base","note":""},{"out":"19:00","terminal":"19:30","back":"20:00","kind":"base","note":""},{"out":"20:00","terminal":"20:30","back":"21:00","kind":"base","note":""}]}},"meta":{"18":{"name":"18","terminal":"Pinheiro do Bicho","corridor":"Esporões","color":"#7c3aed"},"58":{"name":"58","terminal":"Pinheiro do Bicho","corridor":"Lomar / regresso por Esporões","color":"#0284c7"},"97":{"name":"97","terminal":"Celeirós","corridor":"Esporões","color":"#dc2626"},"101":{"name":"101","terminal":"Guisande","corridor":"Lomar","color":"#16a34a"}},"diag":{"pinheiro":[-8.43392383224996,41.50875417725007],"97_nearest_m":[39.5,63.5],"101_nearest_m":[6.7,2.1]}};
+const START=360, END=1320;
+let mode='proposed', currentMinute=500, playing=false, speed=15, lastTick=null, timer=null, prevMinute=500;
+const visibleLines={'18':true,'58':true,'97':true,'101':true};
+const maps={}, layers={}, markers={current:{},proposed:{}}, endedSeen={current:new Set(),proposed:new Set()};
+const baseLayers={};
+let activeBasemap='light';
+const CARTO_KEY_STORAGE='tub_carto_basemap_key_session';
+const BASEMAPS={
+  light:{label:'Claro',provider:'carto',options:{maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}},
+  streets:{label:'Ruas',url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',options:{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}},
+  satellite:{label:'Satélite',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',options:{maxZoom:19,attribution:'Tiles &copy; Esri'}}
+};
+let syncGuard=false;
+let focus='network';
+let selectedLine=null, selectedVehicle=null, detailSelection=null;
+// Rendering state: playback updates position continuously, but expensive/interactive
+// dashboard DOM is only rebuilt when the displayed simulated minute changes.
+let lastDerivedMinute=null;
+let dashboardPointerActive=false;
+let dashboardRenderPending=false;
+
+function tm(t){if(!t)return null;const [h,m]=t.split(':').map(Number);return h*60+m}
+function fmt(m,secs=false){m=((m%1440)+1440)%1440;const h=Math.floor(m/60),mm=Math.floor(m%60),ss=Math.floor((m-Math.floor(m))*60);return `${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}${secs?':'+String(ss).padStart(2,'0'):''}`}
+function minKnown(row){const vals=[row.out,row.terminal,row.back].filter(Boolean).map(tm);return Math.min(...vals)}
+function maxKnown(row){const vals=[row.out,row.terminal,row.back].filter(Boolean).map(tm);return Math.max(...vals)}
+function startLoc(line,row){if(row.out)return 'raio';return (line==='97'||line==='101')?'outer':'pinheiro'}
+function endLoc(line,row){if(row.back)return 'raio';return (line==='97'||line==='101')?'outer':'pinheiro'}
+function clone(x){return JSON.parse(JSON.stringify(x))}
+
+function prepareScenario(name){
+  const s=clone(DATA.schedules[name]);
+  for(const line of Object.keys(s)){
+    const rows=s[line].map((r,i)=>({...r,_row:i,_start:minKnown(r),_end:maxKnown(r)})).sort((a,b)=>a._start-b._start||a._row-b._row);
+    const fleet=[];
+    for(const r of rows){
+      const sl=startLoc(line,r), el=endLoc(line,r); let best=-1,bestAvail=-1;
+      fleet.forEach((v,idx)=>{if(v.loc===sl&&v.avail<=r._start&&v.avail>=bestAvail){best=idx;bestAvail=v.avail}});
+      if(best<0){best=fleet.length;fleet.push({loc:sl,avail:-1})}
+      r.vehicle=`${line}-${String(best+1).padStart(2,'0')}`; r._id=`${name}-${line}-${r._row}`;
+      fleet[best]={loc:el,avail:r._end};
+      r.legs=buildLegs(line,r);
+    }
+    s[line]=rows;
+  }
+  return s;
+}
+
+function buildLegs(line,r){
+  const legs=[];
+  if(line==='18'||line==='58'){
+    if(r.out&&r.terminal)legs.push({a:tm(r.out),b:tm(r.terminal),coords:DATA.routes[line].out,dir:'Centro → Periferia',from:'Rua do Raio',to:'Pinheiro do Bicho'});
+    if(r.terminal&&r.back)legs.push({a:tm(r.terminal),b:tm(r.back),coords:DATA.routes[line].back,dir:'Periferia → Centro',from:'Pinheiro do Bicho',to:'Rua do Raio'});
+  } else {
+    const outer=DATA.meta[line].terminal;
+    if(r.out&&r.terminal){
+      const p=tm(r.terminal)-10;
+      legs.push({a:tm(r.out),b:p,coords:DATA.routes[line].outA,dir:'Centro → Periferia',from:'Rua do Raio',to:'Pinheiro do Bicho'});
+      legs.push({a:p,b:tm(r.terminal),coords:DATA.routes[line].outB,dir:'Centro → Periferia',from:'Pinheiro do Bicho',to:outer});
+    }
+    if(r.terminal&&r.back){
+      const p=tm(r.terminal)+10;
+      legs.push({a:tm(r.terminal),b:p,coords:DATA.routes[line].backA,dir:'Periferia → Centro',from:outer,to:'Pinheiro do Bicho'});
+      legs.push({a:p,b:tm(r.back),coords:DATA.routes[line].backB,dir:'Periferia → Centro',from:'Pinheiro do Bicho',to:'Rua do Raio'});
+    }
+  }
+  return legs;
+}
+
+const S={current:prepareScenario('current'),proposed:prepareScenario('proposed')};
+
+function hav(a,b){const rad=Math.PI/180,R=6371000;const p1=a[1]*rad,p2=b[1]*rad,dp=(b[1]-a[1])*rad,dl=(b[0]-a[0])*rad;const x=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+function interpPath(coords,f){if(!coords||coords.length<2)return coords?.[0]||DATA.stops.raio;f=Math.max(0,Math.min(1,f));const cum=[0];for(let i=1;i<coords.length;i++)cum.push(cum[i-1]+hav(coords[i-1],coords[i]));const target=cum.at(-1)*f;let i=1;while(i<cum.length&&cum[i]<target)i++;if(i>=cum.length)return coords.at(-1);const d=cum[i]-cum[i-1],q=d?((target-cum[i-1])/d):0;return [coords[i-1][0]+(coords[i][0]-coords[i-1][0])*q,coords[i-1][1]+(coords[i][1]-coords[i-1][1])*q]}
+function activeLeg(r,t){for(const leg of r.legs){if(t>=leg.a&&t<=leg.b){const f=leg.b===leg.a?1:(t-leg.a)/(leg.b-leg.a);return {leg,f,pos:interpPath(leg.coords,f)}}}return null}
+
+function isCorridorFocus(){return focus==='lomar'||focus==='esporoes'}
+function corridorLegAllowed(line,leg){
+  if(!isCorridorFocus())return true;
+  const outbound=leg.dir==='Centro → Periferia'&&leg.from==='Rua do Raio'&&leg.to==='Pinheiro do Bicho';
+  const inbound=leg.dir==='Periferia → Centro'&&leg.from==='Pinheiro do Bicho'&&leg.to==='Rua do Raio';
+  if(focus==='lomar')return (outbound&&(line==='58'||line==='101'))||(inbound&&(line==='18'||line==='101'));
+  return (outbound&&(line==='18'||line==='97'))||(inbound&&(line==='58'||line==='97'));
+}
+function routeSegmentsForFocus(line){
+  const r=DATA.routes[line];
+  if(!isCorridorFocus()){
+    return line==='18'||line==='58'?{outs:[r.out],backs:[r.back]}:{outs:[r.outFull],backs:[r.backFull]};
+  }
+  if(focus==='lomar'){
+    if(line==='18')return {outs:[],backs:[r.back]};
+    if(line==='58')return {outs:[r.out],backs:[]};
+    if(line==='101')return {outs:[r.outA],backs:[r.backB]};
+    return {outs:[],backs:[]};
+  }
+  if(line==='18')return {outs:[r.out],backs:[]};
+  if(line==='58')return {outs:[],backs:[r.back]};
+  if(line==='97')return {outs:[r.outA],backs:[r.backB]};
+  return {outs:[],backs:[]};
+}
+function focusRouteCoords(){
+  const all=[];
+  for(const line of ['18','58','97','101']){
+    if(!visibleLines[line])continue;
+    const seg=routeSegmentsForFocus(line);
+    [...seg.outs,...seg.backs].forEach(coords=>coords?.forEach(c=>all.push([c[1],c[0]])));
+  }
+  return all;
+}
+function fitFocus(map){
+  if(!map)return;
+  let all=isCorridorFocus()?focusRouteCoords():[];
+  if(!all.length)Object.values(DATA.routes).forEach(r=>Object.values(r).forEach(v=>{if(Array.isArray(v)&&Array.isArray(v[0]))v.forEach(c=>all.push([c[1],c[0]]))}));
+  if(all.length)map.fitBounds(all,{padding:[24,24]});
+}
+
+function busIcon(line,kind,selected=false,dimmed=false){const c=DATA.meta[line].color,extra=kind!=='base'?'<span class="extraDot"></span>':'';return L.divIcon({className:selected?'selectedBus':'',iconSize:[34,39],iconAnchor:[17,20],popupAnchor:[0,-16],html:`<div class="busIcon ${dimmed?'dimmed':''}">${extra}<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="${c}" stroke="white" stroke-width="2"/><rect x="9" y="7" width="16" height="19" rx="4" fill="white"/><rect x="11" y="9" width="12" height="7" rx="1.5" fill="${c}" opacity=".86"/><rect x="11" y="18" width="4" height="3" rx="1" fill="${c}"/><rect x="19" y="18" width="4" height="3" rx="1" fill="${c}"/><circle cx="12" cy="26" r="2" fill="#26323d"/><circle cx="22" cy="26" r="2" fill="#26323d"/></svg><span class="busLabel" style="background:${c}">${line}</span></div>`})}
+function popupHtml(line,r,al,scenario){const label=scenario==='current'?'Atual':'Proposto';const k=r.kind==='base'?'Base':r.kind==='reinforcement'?'Reforço':'Especial';return `<div class="popupTitle"><span class="badge" style="background:${DATA.meta[line].color}">${line}</span> ${r.vehicle}</div><div class="popupGrid"><b>Cenário</b><span>${label}</span><b>Tipo</b><span>${k}</span><b>Sentido</b><span>${al.leg.dir}</span><b>Troço</b><span>${al.leg.from} → ${al.leg.to}</span><b>Início</b><span>${fmt(r._start)}</span><b>Fim</b><span>${fmt(r._end)}</span>${r.note?`<b>Nota</b><span>${r.note}</span>`:''}</div>`}
+
+function readCartoSessionKey(){
+  try{return sessionStorage.getItem(CARTO_KEY_STORAGE)||''}catch(_){return ''}
+}
+function saveCartoSessionKey(key){
+  try{sessionStorage.setItem(CARTO_KEY_STORAGE,key)}catch(_){}
+}
+function normalizeCartoKey(value){
+  let key=String(value||'').trim();
+  if(!key)return '';
+  if(key.includes('key=')){
+    try{key=new URL(key).searchParams.get('key')||''}catch(_){
+      const match=key.match(/[?&]key=([^&#]+)/);if(match)key=decodeURIComponent(match[1]);
+    }
+  }
+  return key.trim();
+}
+function getCartoKey(ask=false){
+  let key=readCartoSessionKey();
+  if(key||!ask)return key;
+  key=normalizeCartoKey(window.prompt('Introduza a chave CARTO para esta sessão. A chave não será gravada no ficheiro HTML:',''));
+  if(key)saveCartoSessionKey(key);
+  return key;
+}
+function cartoTileUrl(key){
+  return `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`;
+}
+function makeBasemapLayer(type,{askForCartoKey=false}={}){
+  let selected=BASEMAPS[type]?type:'light';
+  let cfg=BASEMAPS[selected];
+  if(selected==='light'){
+    const key=getCartoKey(askForCartoKey);
+    if(key)return L.tileLayer(cartoTileUrl(key),cfg.options);
+    selected='streets';cfg=BASEMAPS.streets;activeBasemap='streets';
+  }
+  return L.tileLayer(cfg.url,cfg.options);
+}
+function refreshBasemapControls(){
+  document.querySelectorAll('.basemapControl').forEach(ctrl=>{
+    ctrl.querySelectorAll('.basemapOption').forEach(btn=>btn.classList.toggle('active',btn.dataset.basemap===activeBasemap));
+    const label=ctrl.querySelector('.basemapLabel');if(label)label.textContent=BASEMAPS[activeBasemap].label;
+  });
+}
+function switchBasemap(type){
+  if(!BASEMAPS[type]||type===activeBasemap)return;
+  if(type==='light'&&!getCartoKey(true))return;
+  activeBasemap=type;
+  for(const scenario of ['current','proposed']){
+    const map=maps[scenario];if(!map)continue;
+    if(baseLayers[scenario])map.removeLayer(baseLayers[scenario]);
+    baseLayers[scenario]=makeBasemapLayer(type).addTo(map);
+    const el=map.getContainer();el.classList.toggle('basemap-satellite',type==='satellite');
+    if(layers[scenario]){
+      layers[scenario].routes.bringToFront?.();layers[scenario].pois.bringToFront?.();layers[scenario].buses.bringToFront?.();
+    }
+  }
+  refreshBasemapControls();
+}
+function addBasemapControl(map){
+  const Control=L.Control.extend({options:{position:'topright'},onAdd(){
+    const wrap=L.DomUtil.create('div','basemapControl leaflet-control');
+    wrap.innerHTML=`<button type="button" class="basemapToggle" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7l8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4"/></svg><span>Mapa base · <span class="basemapLabel">${BASEMAPS[activeBasemap].label}</span></span></button><div class="basemapMenu">${Object.entries(BASEMAPS).map(([key,cfg])=>`<button type="button" class="basemapOption${key===activeBasemap?' active':''}" data-basemap="${key}">${cfg.label}</button>`).join('')}</div>`;
+    L.DomEvent.disableClickPropagation(wrap);L.DomEvent.disableScrollPropagation(wrap);
+    const toggle=wrap.querySelector('.basemapToggle');
+    toggle.addEventListener('click',e=>{e.stopPropagation();const open=wrap.classList.toggle('open');toggle.setAttribute('aria-expanded',open?'true':'false')});
+    wrap.querySelectorAll('.basemapOption').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();switchBasemap(btn.dataset.basemap);wrap.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));
+    map.on('click',()=>{wrap.classList.remove('open');toggle.setAttribute('aria-expanded','false')});
+    return wrap;
+  }});
+  map.addControl(new Control());
+}
+function initMap(id,scenario){
+  const map=L.map(id,{zoomControl:true,preferCanvas:true});
+  baseLayers[scenario]=makeBasemapLayer(activeBasemap,{askForCartoKey:activeBasemap==='light'}).addTo(map);
+  map.getContainer().classList.toggle('basemap-satellite',activeBasemap==='satellite');
+  maps[scenario]=map;
+  layers[scenario]={routes:L.layerGroup().addTo(map),pois:L.layerGroup().addTo(map),buses:L.layerGroup().addTo(map)};
+  addBasemapControl(map);
+  drawRoutes(scenario);drawPois(scenario);fitFocus(map);
+  map.on('moveend zoomend',()=>syncMaps(scenario));
+}
+
+function syncMaps(source){if(mode!=='compare'||syncGuard)return;const other=source==='current'?'proposed':'current';if(!maps[other])return;syncGuard=true;maps[other].setView(maps[source].getCenter(),maps[source].getZoom(),{animate:false});syncGuard=false}
+function drawRoutes(scenario){
+  const g=layers[scenario]?.routes;if(!g)return;g.clearLayers();if(!document.getElementById('showRoutes').checked)return;
+  for(const line of ['18','58','97','101']){
+    if(!visibleLines[line]||(scenario==='current'&&line==='101'))continue;
+    const c=DATA.meta[line].color,isSel=selectedLine===line,isDim=selectedLine&&selectedLine!==line;
+    const seg=routeSegmentsForFocus(line),outs=seg.outs,backs=seg.backs;
+    const add=(coords,dir,baseWeight,dashed=false)=>{
+      if(!coords?.length)return;
+      const normal={color:c,weight:isSel?baseWeight+2:baseWeight,opacity:isDim?.14:(isSel?.98:(dashed?.32:.70)),dashArray:dashed?'7 7':null};
+      const pl=L.polyline(coords.map(p=>[p[1],p[0]]),normal).addTo(g);
+      pl.bindTooltip(`Linha ${line} · ${dir}`,{sticky:true,className:'poiTip'});
+      pl.on('mouseover',()=>pl.setStyle({weight:baseWeight+3,opacity:1}));
+      pl.on('mouseout',()=>pl.setStyle(normal));
+      pl.on('click',e=>{L.DomEvent.stopPropagation(e);selectedLine=selectedLine===line?null:line;selectedVehicle=null;detailSelection=null;drawRoutes('current');drawRoutes('proposed');updateAll();});
+    };
+    outs.forEach(x=>add(x,'Centro → Periferia',4,false));backs.forEach(x=>add(x,'Periferia → Centro',3,true));
+  }
+}
+function drawPois(scenario){
+  const g=layers[scenario].pois;g.clearLayers();
+  const add=(key,name,permanent=false)=>{const p=DATA.stops[key];const m=L.circleMarker([p[1],p[0]],{radius:permanent?6:4,color:'#17324d',weight:2,fillColor:'#fff',fillOpacity:1}).addTo(g);m.bindTooltip(name,{permanent,direction:'top',className:'poiTip',offset:[0,-5]})};
+  add('raio','Rua do Raio',true);add('pinheiro','Pinheiro do Bicho',true);
+  if(!isCorridorFocus()){add('celeiros','Celeirós');if(scenario==='proposed')add('guisande','Guisande')}
+}
+
+function markerVisualSignature(line,kind,isSelected,dimmed){return `${line}|${kind}|${isSelected?1:0}|${dimmed?1:0}`}
+function markerLegSignature(al){return `${al.leg.dir}|${al.leg.from}|${al.leg.to}`}
+function releaseAllMarkerInteractionHolds(){for(const scenario of ['current','proposed'])for(const m of Object.values(markers[scenario]||{}))m._interactionHold=false}
+function bindMarkerInteractionGuards(m,scenario,r,line){
+  const hold=()=>{m._interactionHold=true};
+  const release=()=>{m._interactionHold=false};
+  m.on('mousedown',hold);m.on('touchstart',hold);m.on('mouseup',release);m.on('touchend',release);
+  m.on('click',()=>{
+    release();
+    selectedVehicle={scenario,id:r._id,line};
+    detailSelection={type:'vehicle',scenario,id:r._id,line};
+    updateAll(false,true);
+    setTimeout(()=>markers[scenario][r._id]?.openPopup(),30);
+  });
+}
+function updateMap(scenario,forceVisual=false){
+  if(!maps[scenario])return;const active={};let count=0;
+  for(const line of ['18','58','97','101']){
+    if(!visibleLines[line]||(scenario==='current'&&line==='101'))continue;
+    for(const r of S[scenario][line]||[]){
+      const al=activeLeg(r,currentMinute);if(!al||!corridorLegAllowed(line,al.leg))continue;count++;active[r._id]=true;
+      let m=markers[scenario][r._id];const ll=[al.pos[1],al.pos[0]];
+      const isSelected=!!(selectedVehicle&&selectedVehicle.scenario===scenario&&selectedVehicle.id===r._id);
+      const dimmed=!!((selectedVehicle&&selectedVehicle.scenario===scenario&&!isSelected)||(selectedLine&&selectedLine!==line));
+      const visualSig=markerVisualSignature(line,r.kind,isSelected,dimmed),legSig=markerLegSignature(al),z=isSelected?1100:(r.kind==='base'?200:350);
+      if(!m){
+        m=L.marker(ll,{icon:busIcon(line,r.kind,isSelected,dimmed),zIndexOffset:z,title:`Linha ${line} · ${r.vehicle}`,keyboard:true}).addTo(layers[scenario].buses);markers[scenario][r._id]=m;
+        m._visualSig=visualSig;m._legSig=legSig;m._z=z;m._interactionHold=false;
+        m.bindPopup(popupHtml(line,r,al,scenario));
+        m.bindTooltip(`${r.vehicle} · Linha ${line} · ${al.leg.dir}`,{direction:'top',offset:[0,-18],className:'poiTip'});
+        bindMarkerInteractionGuards(m,scenario,r,line);
+      }else{
+        // Keep the same DOM marker while it moves. Replacing its icon on every animation
+        // frame breaks pointer/click sequences because the clicked node disappears mid-click.
+        if(!m._interactionHold)m.setLatLng(ll);
+        if(!m._interactionHold&&(forceVisual||m._visualSig!==visualSig)){m.setIcon(busIcon(line,r.kind,isSelected,dimmed));m._visualSig=visualSig}
+        if(forceVisual||m._z!==z){m.setZIndexOffset(z);m._z=z}
+        if(forceVisual||m._legSig!==legSig){
+          m.setPopupContent(popupHtml(line,r,al,scenario));
+          m.setTooltipContent(`${r.vehicle} · Linha ${line} · ${al.leg.dir}`);
+          m._legSig=legSig;
+        }
+      }
+    }
+  }
+  for(const [id,m] of Object.entries(markers[scenario]))if(!active[id]){
+    layers[scenario].buses.removeLayer(m);delete markers[scenario][id];
+    if(selectedVehicle&&selectedVehicle.scenario===scenario&&selectedVehicle.id===id){selectedVehicle=null;detailSelection=null}
+  }
+  const stats=document.getElementById(scenario==='current'?'currentStats':'proposedStats');
+  if(stats){const sig=`${Math.floor(currentMinute)}|${count}`;if(stats.dataset.liveSig!==sig){stats.dataset.liveSig=sig;stats.innerHTML=`<span class="liveDot"></span><b>${fmt(currentMinute)}</b><small>${count} veículo${count===1?'':'s'} em circulação</small>`}}
+}
+function eventLists(scenario){const raio=[],pin=[];for(const line of ['18','58','97','101']){if(!visibleLines[line]||(selectedLine&&selectedLine!==line)||(scenario==='current'&&line==='101'))continue;for(const r of S[scenario][line]||[]){if(r.out)raio.push({line,time:tm(r.out),kind:r.kind,vehicle:r.vehicle,id:r._id});if(line==='18'||line==='58'){if(r.terminal&&r.back)pin.push({line,time:tm(r.terminal),kind:r.kind,vehicle:r.vehicle,id:r._id})}else if(r.terminal&&r.back){pin.push({line,time:tm(r.terminal)+10,kind:r.kind,vehicle:r.vehicle,id:r._id})}}}return {raio:raio.sort((a,b)=>a.time-b.time),pin:pin.sort((a,b)=>a.time-b.time)}}
+function nextRows(events,n=5){let arr=events.filter(e=>e.time>=currentMinute-.01);if(arr.length<n)arr=arr.concat(events.filter(e=>e.time<currentMinute-.01).map(e=>({...e,nextDay:true,time:e.time+1440})));return arr.slice(0,n)}
+function nextBox(title,events){const rows=nextRows(events);return `<div class="nextBox"><div class="nextTitle">${title}</div>${rows.map(e=>{const w=Math.max(0,Math.round(e.time-currentMinute)),txt=w===0?'<span class="now">agora</span>':`${w} min`;return `<div class="nextRow"><span class="badge" style="background:${DATA.meta[e.line].color}">${e.line}</span><span class="time">${fmt(e.time)}</span><span class="wait">${txt}${e.kind!=='base'?' · '+(e.kind==='reinforcement'?'reforço':'especial'):''}</span></div>`}).join('')}</div>`}
+function intervalValues(events){const out=[];for(let i=1;i<events.length;i++){const g=events[i].time-events[i-1].time;if(g>=0&&g<=180)out.push(g)}return out}
+function focusSets(scenario){
+  const ev=eventLists(scenario);
+  const fl=(arr,lines)=>arr.filter(e=>lines.includes(e.line));
+  if(focus==='raio')return {a:ev.raio,b:[],aTitle:'Rua do Raio · Centro → Periferia',bTitle:'',label:'Rua do Raio'};
+  if(focus==='pinheiro')return {a:ev.pin,b:[],aTitle:'Pinheiro do Bicho · Periferia → Centro',bTitle:'',label:'Pinheiro do Bicho'};
+  if(focus==='lomar')return {a:fl(ev.raio,['58','101']),b:fl(ev.pin,['101','18']),aTitle:'Lomar · Centro → Periferia',bTitle:'Lomar · Periferia → Centro',label:'Eixo Lomar'};
+  if(focus==='esporoes')return {a:fl(ev.raio,['18','97']),b:fl(ev.pin,['58','97']),aTitle:'Esporões · Centro → Periferia',bTitle:'Esporões · Periferia → Centro',label:'Eixo Esporões'};
+  return {a:ev.raio,b:ev.pin,aTitle:'Rua do Raio · Centro → Periferia',bTitle:'Pinheiro do Bicho · Periferia → Centro',label:'Rede'};
+}
+function metricSet(scenario){
+  const fs=focusSets(scenario),ga=intervalValues(fs.a),gb=intervalValues(fs.b),g=[...ga,...gb];
+  const target=g.filter(x=>x>=15&&x<=20).length,sorted=[...g].sort((a,b)=>a-b);
+  const avg=g.length?g.reduce((a,b)=>a+b,0)/g.length:null,max=g.length?Math.max(...g):null,min=g.length?Math.min(...g):null;
+  const median=sorted.length?(sorted.length%2?sorted[(sorted.length-1)/2]:(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2):null;
+  const wait=g.length&&g.reduce((a,b)=>a+b,0)>0?g.reduce((a,h)=>a+h*h,0)/(2*g.reduce((a,b)=>a+b,0)):null;
+  const activeByLine={'18':0,'58':0,'97':0,'101':0};
+  for(const line of ['18','58','97','101']){if((scenario==='current'&&line==='101')||!visibleLines[line]||(selectedLine&&selectedLine!==line))continue;for(const r of S[scenario][line]||[]){const al=activeLeg(r,currentMinute);if(al&&corridorLegAllowed(line,al.leg))activeByLine[line]++}}
+  const active=Object.values(activeByLine).reduce((a,b)=>a+b,0),allEvents=[...fs.a,...fs.b].sort((a,b)=>a.time-b.time),services=allEvents.length;
+  return {fs,g,targetPct:g.length?100*target/g.length:0,avg,median,max,min,wait,close:g.filter(x=>x<=5).length,le10:g.filter(x=>x<=10).length,ge30:g.filter(x=>x>=30).length,long:g.filter(x=>x>30).length,active,activeByLine,services,first:allEvents[0]?.time??null,last:allEvents.at(-1)?.time??null};
+}
+function statusFor(m){
+  if(!m.g.length)return {label:'Sem dados',cls:'neutral',text:'Não existem intervalos suficientes para avaliar.'};
+  if(m.targetPct>=60 && (m.max??99)<=25)return {label:'Boa coordenação',cls:'good',text:'A maioria dos intervalos está próxima do objetivo e sem lacunas relevantes.'};
+  if(m.targetPct>=40 && (m.max??99)<=30)return {label:'Atenção',cls:'warn',text:'A distribuição é aceitável, mas ainda existem intervalos fora do objetivo.'};
+  return {label:'A ajustar',cls:'bad',text:'Há concentração de serviços e/ou lacunas relevantes ao longo do período.'};
+}
+function fmt1(v){return v==null?'—':v.toFixed(1).replace('.',',')}
+function svgIcon(name){
+  const icons={
+    bus:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3"/><path d="M7 7h10M8 18v3M16 18v3M8 14h.01M16 14h.01"/></svg>',
+    target:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>',
+    clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>',
+    bars:'<svg viewBox="0 0 24 24"><path d="M5 19V9M10 19V5M15 19v-7M20 19V3"/></svg>',
+    wave:'<svg viewBox="0 0 24 24"><path d="M3 12h3l2-5 4 10 3-7 2 2h4"/></svg>',
+    route:'<svg viewBox="0 0 24 24"><path d="M6 18c0-6 12-6 12-12M6 18h4M18 6h-4"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/></svg>'
+  };return icons[name]||icons.bars;
+}
+function pctDelta(cur,prop,invert=false){if(cur==null||prop==null||cur===0)return '';const d=(prop-cur)/Math.abs(cur)*100;const good=invert?d<=0:d>=0;return `<span class="deltaPill ${good?'good':'bad'}">${d>0?'+':''}${Math.round(d)}%</span>`}
+function activeDonut(m){
+  const total=Math.max(1,m.active), order=['101','58','97','18'], parts=[];let acc=0;
+  for(const l of order){const n=m.activeByLine[l]||0,p=n/total*100;if(n){parts.push(`${DATA.meta[l].color} ${acc}% ${acc+p}%`);acc+=p}}
+  const gradient=parts.length?`conic-gradient(${parts.join(',')})`:'#E9EFF2';
+  return `<div class="fleetWrap"><div class="donut" style="background:${gradient}"><div class="donutHole"><b>${m.active}</b><span>veículos</span></div></div><div class="fleetLegend">${order.map(l=>`<div><i style="background:${DATA.meta[l].color}"></i><b>${l}</b><span>${m.activeByLine[l]||0}</span></div>`).join('')}</div></div>`;
+}
+function filterBanner(){if(!selectedLine&&!selectedVehicle)return '';if(selectedVehicle)return `<div class="filterBanner"><b><i style="background:${DATA.meta[selectedVehicle.line].color}"></i>${selectedVehicle.line} · veículo selecionado</b><button data-action="clear-selection">×</button></div>`;return `<div class="filterBanner"><b><i style="background:${DATA.meta[selectedLine].color}"></i>Filtro ativo · Linha ${selectedLine}</b><button data-action="clear-line">×</button></div>`}
+function visibleScenario(){return mode==='current'?'current':'proposed'}
+function futureEvents(fs,minutes=60){return [...fs.a,...fs.b].filter(e=>e.time>=currentMinute&&e.time<currentMinute+minutes).sort((a,b)=>a.time-b.time)}
+function gapRows(events,title){const rows=[];for(let i=1;i<events.length;i++){const g=events[i].time-events[i-1].time;if(g>=0&&g<=180)rows.push({gap:g,start:events[i-1].time,end:events[i].time,a:events[i-1],b:events[i],title})}return rows}
+function allGapRows(fs){return [...gapRows(fs.a,fs.aTitle),...gapRows(fs.b,fs.bTitle)].sort((a,b)=>a.start-b.start)}
+function upcomingLargestGap(fs,horizon=120){return allGapRows(fs).filter(x=>x.start>=currentMinute&&x.start<=currentMinute+horizon).sort((a,b)=>b.gap-a.gap||a.start-b.start)[0]||null}
+function gapClass(g){return g>=15&&g<=20?'target':(g<=5||g>30?'alert':(g>=10&&g<=14||g>=21&&g<=30?'mid':'neutral'))}
+function directionSequence(title,events){
+  const next=events.filter(e=>e.time>=currentMinute-.01).slice(0,5);
+  if(!next.length)return `<div class="coordDirection"><div class="coordDirectionTitle"><span>${title}</span><span>sem serviços seguintes</span></div></div>`;
+  let items='';
+  next.forEach((e,i)=>{
+    const color=DATA.meta[e.line].color;
+    items+=`<div class="coordEvent" style="--line-color:${color};color:${color}"><span class="coordLine">${e.line}</span><span class="coordDot" aria-hidden="true"></span><time>${fmt(e.time)}</time></div>`;
+    if(i<next.length-1){const g=next[i+1].time-e.time;items+=`<span class="coordGapPlain" title="${fmt(e.time)} → ${fmt(next[i+1].time)}"><b>${g}</b> min</span>`}
+  });
+  return `<div class="coordDirection"><div class="coordDirectionTitle"><span>${title}</span><span>minutos entre serviços</span></div><div class="coordSequence coordTimeline">${items}</div></div>`
+}
+function coordinationHtml(scenario){const fs=focusSets(scenario);return `<div class="panelHead"><div class="cardTitle iconTitle"><span class="circleIcon">${svgIcon('wave')}</span>Coordenação dos próximos serviços</div><span class="linkText">${fmt(currentMinute)}</span></div><div class="coordIntro">Intervalos reais entre as próximas passagens no âmbito selecionado.</div>${directionSequence(fs.aTitle,fs.a)}${fs.b.length?directionSequence(fs.bTitle,fs.b):''}`}
+function nextServiceTable(m){const events=[...m.fs.a,...m.fs.b].filter(e=>e.time>=currentMinute).sort((a,b)=>a.time-b.time).slice(0,5);return `<table class="serviceTable"><thead><tr><th>Linha</th><th>Destino</th><th>Passagem</th><th>Em</th></tr></thead><tbody>${events.length?events.map(e=>{const wait=Math.max(0,Math.round(e.time-currentMinute)),dest=(focus==='pinheiro'||(m.fs.b.includes(e)&&focus!=='raio'))?'Rua do Raio':DATA.meta[e.line].terminal;return `<tr data-action="service" data-time="${e.time}" data-line="${e.line}"><td><span class="linePill" style="background:${DATA.meta[e.line].color}">${e.line}</span></td><td>${dest}</td><td><b>${fmt(e.time)}</b></td><td><b>${wait===0?'agora':wait+' min'}</b></td></tr>`}).join(''):`<tr><td colspan="4" class="emptyCell">Sem serviços seguintes.</td></tr>`}</tbody></table>`}
+function binKeyLabel(k){return {'0-5':'0–5','6-10':'6–10','11-14':'11–14','15-20':'15–20','21-30':'21–30','gt30':'>30'}[k]||k}
+function binPredicate(k,g){return k==='0-5'?g<=5:k==='6-10'?g>=6&&g<=10:k==='11-14'?g>=11&&g<=14:k==='15-20'?g>=15&&g<=20:k==='21-30'?g>=21&&g<=30:g>30}
+function distributionHtml(gaps,scenario){const bins=[['0-5',x=>x<=5],['6-10',x=>x>=6&&x<=10],['11-14',x=>x>=11&&x<=14],['15-20',x=>x>=15&&x<=20],['21-30',x=>x>=21&&x<=30],['gt30',x=>x>30]],vals=bins.map(([k,f])=>({k,l:binKeyLabel(k),n:gaps.filter(f).length})),mx=Math.max(1,...vals.map(x=>x.n));return `<div class="miniBars">${vals.map(v=>`<div class="barCol ${detailSelection?.type==='bin'&&detailSelection.bin===v.k?'selected':''}" data-action="bin" data-bin="${v.k}" data-scenario="${scenario}"><span>${v.n}</span><div class="barTrack"><i class="barFill ${v.k==='15-20'?'target':''}" style="height:${Math.max(3,100*v.n/mx)}%"></i></div><small>${v.l}</small></div>`).join('')}</div>`}
+function hourlyHtml(fs,scenario){const all=[...fs.a,...fs.b],counts={};for(let h=6;h<=21;h++)counts[h]=0;all.forEach(e=>{const h=Math.floor(e.time/60);if(h>=6&&h<=21)counts[h]++});const mx=Math.max(1,...Object.values(counts)),sel=Math.floor(currentMinute/60);return `<div class="hourBars">${Object.entries(counts).map(([h,n])=>`<div class="hourCol ${+h===sel?'selected':''}" data-action="hour" data-hour="${h}" data-scenario="${scenario}" title="${h}:00 · ${n} passagens"><i style="height:${Math.max(5,100*n/mx)}%"></i><span>${String(h).padStart(2,'0')}</span></div>`).join('')}</div><div class="clickExplain">Seleciona uma hora para mover imediatamente o relógio e o mapa para esse período.</div>`}
+function activeVehicleRows(scenario){const rows=[];for(const line of ['18','58','97','101']){if((scenario==='current'&&line==='101')||!visibleLines[line]||(selectedLine&&selectedLine!==line))continue;for(const r of S[scenario][line]||[]){const al=activeLeg(r,currentMinute);if(al&&corridorLegAllowed(line,al.leg))rows.push({line,id:r._id,vehicle:r.vehicle,dir:al.leg.dir,end:r._end})}}return rows.sort((a,b)=>a.line.localeCompare(b.line)||a.vehicle.localeCompare(b.vehicle))}
+function detailPanelHtml(scenario,m){if(!detailSelection)return '';let title='',rows=[];
+  if(detailSelection.type==='vehicle'){const v=selectedVehicle;if(!v||v.scenario!==scenario)return '';const r=(S[scenario][v.line]||[]).find(x=>x._id===v.id);if(!r)return '';title=`${r.vehicle} · Linha ${v.line}`;rows=[`<div class="detailRow"><span class="linePill" style="background:${DATA.meta[v.line].color}">${v.line}</span><div><b>${fmt(r._start)} → ${fmt(r._end)}</b><div class="muted">${r.kind==='base'?'Serviço base':r.kind==='reinforcement'?'Reforço':'Especial'}</div></div><div class="right">${r.note||''}</div></div>`];}
+  if(detailSelection.type==='active'){title='Veículos em circulação agora';rows=activeVehicleRows(scenario).map(x=>`<div class="detailRow" data-action="vehicle" data-id="${x.id}" data-line="${x.line}" data-scenario="${scenario}"><span class="linePill" style="background:${DATA.meta[x.line].color}">${x.line}</span><div><b>${x.vehicle}</b><div class="muted">${x.dir}</div></div><div class="right">até ${fmt(x.end)}</div></div>`)}
+  if(detailSelection.type==='next60'){title='Serviços nos próximos 60 minutos';rows=futureEvents(m.fs,60).map(e=>`<div class="detailRow" data-action="service" data-time="${e.time}" data-line="${e.line}"><span class="linePill" style="background:${DATA.meta[e.line].color}">${e.line}</span><div><b>${fmt(e.time)}</b><div class="muted">${e.vehicle}</div></div><div class="right">${Math.round(e.time-currentMinute)} min</div></div>`)}
+  if(detailSelection.type==='bin'){if(detailSelection.scenario&&detailSelection.scenario!==scenario)return '';title=`Intervalos ${binKeyLabel(detailSelection.bin)} min`;rows=allGapRows(m.fs).filter(x=>binPredicate(detailSelection.bin,x.gap)).map(x=>`<div class="detailRow" data-action="interval" data-time="${x.start}"><span class="coordGap ${gapClass(x.gap)}">${x.gap}</span><div><b>${fmt(x.start)} → ${fmt(x.end)}</b><div class="muted">${x.title}</div></div><div class="right">ir para ${fmt(x.start)}</div></div>`)}
+  return `<div class="detailPanel"><div class="detailHead"><strong>${title}</strong><button data-action="close-detail">×</button></div><div class="detailBody">${rows.length?rows.join(''):'<div class="detailEmpty">Sem ocorrências neste âmbito.</div>'}</div></div>`;
+}
+function selectedFilterHtml(){return filterBanner()}
+function dashboardKpisHtml(scenario,m){
+  const next=[...m.fs.a,...m.fs.b].filter(e=>e.time>=currentMinute).sort((a,b)=>a.time-b.time)[0],largest=upcomingLargestGap(m.fs,120),next60=futureEvents(m.fs,60),nextTxt=next?`${next.line} · ${fmt(next.time)}`:'—';
+  return `<div class="kpiGrid"><div class="kpiCard interactive" data-action="active"><span class="kpiIcon">${svgIcon('bus')}</span><label>Veículos agora</label><strong>${m.active}</strong><em class="clickHint">clicar para identificar</em></div><div class="kpiCard interactive" data-action="next" ${next?`data-time="${next.time}" data-line="${next.line}"`:''}><span class="kpiIcon">${svgIcon('route')}</span><label>Próximo serviço</label><strong class="nextKpi">${nextTxt}</strong><em class="clickHint">${next?Math.round(next.time-currentMinute)+' min · clicar para ir':''}</em></div><div class="kpiCard interactive" data-action="largest-gap" ${largest?`data-time="${largest.start}"`:''}><span class="kpiIcon">${svgIcon('clock')}</span><label>Maior intervalo próximo</label><strong>${largest?largest.gap+' min':'—'}</strong><em class="clickHint">${largest?fmt(largest.start)+' → '+fmt(largest.end):'próximas 2 horas'}</em></div><div class="kpiCard interactive" data-action="next60"><span class="kpiIcon">${svgIcon('bars')}</span><label>Serviços nos próximos 60 min</label><strong class="next60Count">${next60.length}</strong><em class="clickHint">clicar para detalhar</em></div></div>`
+}
+function comparisonCompactHtml(){
+  const a=metricSet('current'),p=metricSet('proposed');
+  return `<section class="compareCompact"><div class="compareCompactHead"><div><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('bars')}</span>Atual vs. Proposto</div><p>Resumo comparativo no mesmo âmbito de análise.</p></div><span class="ghostPill">${p.fs.label}</span></div>${comparisonTableHtml(a,p)}</section>`
+}
+function unifiedDashboardHtml(scenario,m){
+  return `<div class="dashHeader"><div class="cardTitle iconTitle"><span class="titleIcon">${svgIcon('bars')}</span>Indicadores da rede <small>(${scenario==='current'?'atual':'proposto'})</small></div><span class="ghostPill">${m.fs.label}</span></div>${dashboardKpisHtml(scenario,m)}${detailPanelHtml(scenario,m)}<section class="panelCard coordPanel coordNew dashboardSection">${coordinationHtml(scenario)}</section><div class="analysisGrid"><section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('bars')}</span>Passagens por hora</div><span class="sectionAction">selecionar hora</span></div>${hourlyHtml(m.fs,scenario)}</section><section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('wave')}</span>Distribuição dos intervalos</div><span class="sectionAction">explorar</span></div>${distributionHtml(m.g,scenario)}</section></div>${comparisonCompactHtml()}`
+}
+function metricDelta(a,p,invert=false){if(a==null||p==null)return {txt:'—',cls:'neutral'};const d=p-a,good=invert?d<=0:d>=0;return {txt:`${d>0?'+':''}${fmt1(d)}`,cls:d===0?'neutral':good?'good':'bad'}}
+function comparisonTableHtml(a,p){
+  const rows=[['Serviços no âmbito','services','count',false],['Intervalo médio','avg','min',true],['Intervalo mediano','median','min',true],['Maior intervalo','max','min',true],['Espera média teórica','wait','min',true],['Intervalos ≤5 min','close','count',true],['Intervalos ≥30 min','ge30','count',true],['Primeiro / último serviço','span','span',false]];
+  return `<table class="compareTable"><thead><tr><th>Indicador</th><th>Atual</th><th>Proposto</th><th>Variação</th></tr></thead><tbody>${rows.map(([lab,k,type,invert])=>{
+    let av,pv,aa,pp,d={txt:'—',cls:'neutral'};
+    if(type==='span'){aa=`${a.first==null?'—':fmt(a.first)} – ${a.last==null?'—':fmt(a.last)}`;pp=`${p.first==null?'—':fmt(p.first)} – ${p.last==null?'—':fmt(p.last)}`;}
+    else {av=a[k];pv=p[k];aa=type==='min'?`${fmt1(av)} min`:av;pp=type==='min'?`${fmt1(pv)} min`:pv;d=metricDelta(av,pv,invert)}
+    const act=k==='close'?'compare-close':k==='ge30'?'compare-ge30':null;
+    return `<tr ${act?`data-action="${act}"`:''}><td>${lab}</td><td>${aa}</td><td><strong>${pp}</strong></td><td><span class="compareDelta ${d.cls}">${d.txt}</span></td></tr>`
+  }).join('')}</tbody></table>`
+}
+function comparisonDashboardHtml(){const a=metricSet('current'),p=metricSet('proposed');return `<div class="dashHeader"><div class="cardTitle iconTitle"><span class="titleIcon">${svgIcon('bars')}</span>Comparação Atual vs. Proposto</div><span class="ghostPill">${p.fs.label}</span></div><div class="compareSummaryKpis"><div><span>Intervalo médio</span><b>${fmt1(a.avg)} → ${fmt1(p.avg)} min</b><small>${a.avg&&p.avg?Math.round((p.avg-a.avg)/a.avg*100)+'%':''}</small></div><div><span>Maior intervalo</span><b>${a.max??'—'} → ${p.max??'—'} min</b><small>redução de lacunas</small></div><div><span>Espera teórica</span><b>${fmt1(a.wait)} → ${fmt1(p.wait)} min</b><small>chegada aleatória</small></div></div>${comparisonTableHtml(a,p)}<div class="compareWideCharts"><section class="panelCard interactive"><div class="panelHead"><div class="cardTitle">Passagens por hora · Proposto</div><span class="sectionAction">clicável</span></div>${hourlyHtml(p.fs,'proposed')}</section><section class="panelCard interactive"><div class="panelHead"><div class="cardTitle">Distribuição · Proposto</div><span class="sectionAction">clicável</span></div>${distributionHtml(p.g,'proposed')}</section></div>${detailPanelHtml('proposed',p)}`}
+function scenarioInfo(scenario){const host=document.getElementById(scenario==='current'?'infoCurrent':'infoProposed'),m=metricSet(scenario);host.innerHTML=`${selectedFilterHtml()}${unifiedDashboardHtml(scenario,m)}`}
+function renderCompareSummary(){const el=document.getElementById('comparisonPanel');if(!el)return;if(mode!=='compare'){el.classList.add('hidden');return}el.classList.remove('hidden');const m=metricSet('proposed');el.innerHTML=`<div class="dashCard"><div style="padding:14px">${selectedFilterHtml()}${unifiedDashboardHtml('proposed',m)}</div></div>`}
+
+function selectVehicleFromDetail(scenario,line,id){selectedVehicle={scenario,line,id};detailSelection={type:'vehicle',scenario,line,id};updateAll();setTimeout(()=>markers[scenario]?.[id]?.openPopup(),40)}
+function handleDashboardClick(e){
+  const el=e.target.closest('[data-action]');if(!el)return;const action=el.dataset.action;
+  if(action==='clear-line'){selectedLine=null;detailSelection=null;drawRoutes('current');drawRoutes('proposed');updateAll();return}
+  if(action==='clear-selection'){selectedVehicle=null;detailSelection=null;updateAll();return}
+  if(action==='close-detail'){detailSelection=null;updateAll();return}
+  if(action==='active'){detailSelection={type:'active'};updateAll();return}
+  if(action==='next60'){detailSelection={type:'next60'};updateAll();return}
+  if(action==='hour'){setTime(+el.dataset.hour*60);return}
+  if(action==='bin'){detailSelection={type:'bin',bin:el.dataset.bin,scenario:el.dataset.scenario};updateAll();return}
+  if(action==='vehicle'){selectVehicleFromDetail(el.dataset.scenario,el.dataset.line,el.dataset.id);return}
+  if(['service','gap','interval','next','largest-gap'].includes(action)){if(el.dataset.time)setTime(+el.dataset.time);else updateAll();return}
+  if(action==='compare-close'){detailSelection={type:'bin',bin:'0-5',scenario:'proposed'};updateAll();return}
+  if(action==='compare-ge30'){detailSelection={type:'bin',bin:'gt30',scenario:'proposed'};updateAll();return}
+}
+function updateEnded(prev,now){if(now<=prev)return;/* serviços terminam silenciosamente; os veículos desaparecem do mapa em updateMap */}
+let toastTimer=null;function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+
+function updateTimeChrome(){
+  const timeInput=document.getElementById('timeInput');if(timeInput)timeInput.value=fmt(currentMinute);
+  const range=document.getElementById('timeRange');
+  const pct=Math.max(0,Math.min(100,(currentMinute-START)/(END-START)*100));
+  if(range){range.value=currentMinute;range.style.setProperty('--p',pct+'%')}
+  const sliderBus=document.getElementById('sliderBus');if(sliderBus)sliderBus.style.setProperty('--bus-x',pct+'%');
+}
+function updateLegendSelection(){document.querySelectorAll('.mapLegend div[data-map-line]').forEach(x=>x.classList.toggle('selected',x.dataset.mapLine===selectedLine))}
+function updateVisibleMaps(forceVisual=false){
+  if(mode!=='proposed')updateMap('current',forceVisual);
+  if(mode!=='current')updateMap('proposed',forceVisual);
+}
+function renderDerivedUI(force=false){
+  const minuteKey=Math.floor(currentMinute+1e-7);
+  if(!force&&minuteKey===lastDerivedMinute)return;
+  if(dashboardPointerActive&&!force){dashboardRenderPending=true;return}
+  if(mode==='current')scenarioInfo('current');
+  else if(mode==='proposed')scenarioInfo('proposed');
+  else renderCompareSummary();
+  lastDerivedMinute=minuteKey;dashboardRenderPending=false;
+}
+function updateAll(withEnds=false,forceUi=true){
+  if(withEnds)updateEnded(prevMinute,currentMinute);
+  updateTimeChrome();updateLegendSelection();
+  // A full update is used for deliberate user actions (filters, selections, jumps).
+  // It may refresh marker icons once because their visual state can have changed.
+  updateMap('current',forceUi);updateMap('proposed',forceUi);
+  renderDerivedUI(forceUi);prevMinute=currentMinute;
+}
+function updatePlaybackFrame(withEnds=false){
+  if(withEnds)updateEnded(prevMinute,currentMinute);
+  updateTimeChrome();
+  // During playback only the visible map position(s) move continuously. Interactive
+  // dashboard nodes are kept alive and are refreshed at most once per simulated minute.
+  updateVisibleMaps(false);renderDerivedUI(false);prevMinute=currentMinute;
+}
+function setTime(m,ends=false){currentMinute=Math.max(START,Math.min(END,m));updateAll(ends,true)}
+function play(){playing=!playing;document.getElementById('playBtn').textContent=playing?'Ⅱ':'▶';document.getElementById('sliderRail')?.classList.toggle('playing',playing);if(playing){lastTick=performance.now();tick()}else if(timer){cancelAnimationFrame(timer);timer=null}}
+function tick(now=performance.now()){
+  if(!playing)return;
+  const dt=(now-lastTick)/1000;lastTick=now;const next=currentMinute+dt*speed/60;
+  if(next>=END){currentMinute=END;updatePlaybackFrame(true);playing=false;document.getElementById('playBtn').textContent='▶';document.getElementById('sliderRail')?.classList.remove('playing');renderDerivedUI(true);return}
+  currentMinute=next;updatePlaybackFrame(true);timer=requestAnimationFrame(tick)
+}
+function renderLegend(){
+  document.getElementById('legend').innerHTML=['18','58','97','101'].map(l=>`<label class="lineSwitch"><input type="checkbox" data-line="${l}" checked><span class="lineDot" style="background:${DATA.meta[l].color}"></span><b>${l}</b><span class="miniToggle"></span></label>`).join('');
+  document.querySelectorAll('#legend [data-line]').forEach(x=>x.onchange=()=>{visibleLines[x.dataset.line]=x.checked;if(!x.checked&&selectedLine===x.dataset.line)selectedLine=null;if(!x.checked&&selectedVehicle?.line===x.dataset.line)selectedVehicle=null;detailSelection=null;drawRoutes('current');drawRoutes('proposed');updateAll()})
+}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('#modeButtons button').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  const wrap=document.getElementById('mapsWrap'),cc=document.getElementById('currentCard'),pc=document.getElementById('proposedCard'),workspace=document.querySelector('.workspace'),comparisonPanel=document.getElementById('comparisonPanel');
+  wrap.classList.toggle('compare',m==='compare');
+  workspace?.classList.toggle('compareMode',m==='compare');
+  cc.classList.toggle('hidden',m==='proposed');
+  pc.classList.toggle('hidden',m==='current');
+  document.getElementById('currentDashCard').classList.toggle('hidden',m!=='current');
+  document.getElementById('proposedDashCard').classList.toggle('hidden',m!=='proposed');
+  // O painel de comparação é exclusivo do modo Comparar. Ao regressar a Atual/Proposto
+  // tem de ser ocultado explicitamente; caso contrário permanece no DOM e aparenta
+  // uma duplicação dos indicadores por baixo da dashboard normal.
+  comparisonPanel?.classList.toggle('hidden',m!=='compare');
+  renderDerivedUI(true);
+  setTimeout(()=>{if(m!=='proposed')maps.current?.invalidateSize();if(m!=='current')maps.proposed?.invalidateSize();if(m==='compare'&&maps.current&&maps.proposed)maps.proposed.setView(maps.current.getCenter(),maps.current.getZoom(),{animate:false});},80);
+}
+function fitAll(map){fitFocus(map)}
+function updateRealClock(){const d=new Date();const months=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const ds=`${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;document.getElementById('realDate').textContent=ds;document.getElementById('realClock').textContent=d.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}
+function wire(){
+  document.querySelectorAll('#modeButtons button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+  document.getElementById('focusSelect').onchange=e=>{focus=e.target.value;selectedLine=null;selectedVehicle=null;detailSelection=null;drawRoutes('current');drawRoutes('proposed');drawPois('current');drawPois('proposed');updateAll();setTimeout(()=>{if(mode!=='proposed')fitFocus(maps.current);if(mode!=='current')fitFocus(maps.proposed)},30)};
+  document.getElementById('timeInput').onchange=e=>{if(e.target.value){if(playing)play();setTime(tm(e.target.value))}};
+  document.getElementById('timeRange').oninput=e=>{if(playing)play();setTime(+e.target.value)};
+  document.getElementById('playBtn').onclick=play;
+  document.getElementById('backBtn').onclick=()=>{if(playing)play();setTime(currentMinute-1)};
+  document.getElementById('forwardBtn').onclick=()=>{if(playing)play();setTime(currentMinute+1)};
+  document.querySelectorAll('#speedButtons button').forEach(b=>b.onclick=()=>{speed=+b.dataset.speed;document.querySelectorAll('#speedButtons button').forEach(x=>x.classList.toggle('active',x===b))});
+  document.getElementById('showRoutes').onchange=()=>{drawRoutes('current');drawRoutes('proposed')};
+  document.getElementById('fitCurrent').onclick=()=>fitFocus(maps.current);document.getElementById('fitProposed').onclick=()=>fitFocus(maps.proposed);
+  const dashboardPane=document.getElementById('dashboardPane');
+  dashboardPane.addEventListener('click',handleDashboardClick);
+  // Prevent the once-per-minute derived-data refresh from replacing a control between
+  // pointer-down and click while playback is running.
+  dashboardPane.addEventListener('pointerdown',()=>{dashboardPointerActive=true},true);
+  const releaseDashboardPointer=()=>{if(!dashboardPointerActive)return;dashboardPointerActive=false;if(dashboardRenderPending)setTimeout(()=>renderDerivedUI(true),0)};
+  window.addEventListener('pointerup',releaseDashboardPointer,true);
+  window.addEventListener('pointercancel',releaseDashboardPointer,true);
+  // A release outside a moving marker must never leave that marker frozen.
+  window.addEventListener('pointerup',releaseAllMarkerInteractionHolds,true);
+  window.addEventListener('pointercancel',releaseAllMarkerInteractionHolds,true);
+  window.addEventListener('mouseup',releaseAllMarkerInteractionHolds,true);
+  window.addEventListener('touchend',releaseAllMarkerInteractionHolds,true);
+  window.addEventListener('blur',releaseAllMarkerInteractionHolds,true);
+  document.querySelectorAll('.mapLegend div').forEach((row,i)=>{const line=['18','58','97','101'][i%4];row.dataset.mapLine=line;row.onclick=()=>{selectedLine=selectedLine===line?null:line;selectedVehicle=null;detailSelection=null;document.querySelectorAll('.mapLegend div').forEach(x=>x.classList.toggle('selected',x.dataset.mapLine===selectedLine));drawRoutes('current');drawRoutes('proposed');updateAll()}});
+  updateRealClock();setInterval(updateRealClock,30000);
+}
+
+function boot(){
+  renderLegend();wire();setMode('proposed');
+  if(!window.L){
+    document.getElementById('mapCurrent').style.display='none';document.getElementById('mapProposed').style.display='none';
+    document.getElementById('errCurrent').style.display='block';document.getElementById('errProposed').style.display='block';
+    scenarioInfo('current');scenarioInfo('proposed');renderCompareSummary();return;
+  }
+  initMap('mapCurrent','current');initMap('mapProposed','proposed');updateAll(false,true);
+  console.info('Diagnóstico geográfico',DATA.diag);
+}
+window.addEventListener('load',boot);
+</script>
+</body></html>
