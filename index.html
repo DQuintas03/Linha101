@@ -663,10 +663,13 @@ let detailSelection=null;     // o que o painel de detalhe está a mostrar
 const maps={}, layers={}, baseLayers={}, markers={current:{},proposed:{}};
 let syncGuard=false;          // evita recursão ao sincronizar os dois mapas
 
-/* Mapas-base disponíveis no controlo do canto superior direito */
+/* Mapas-base disponíveis no controlo do canto superior direito.
+   NÃO remover o ?key= do mapa Claro: sem ele a CARTO recusa os pedidos feitos
+   a partir do browser (por Origin/Referer) e o mapa fica em branco. */
+const CARTO_KEY='cb1_3m0w_1_d71241ca6f5a3af09f252fad';
 let activeBasemap='light';
 const BASEMAPS={
-  light:{label:'Claro',url:'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png',options:{maxZoom:20,subdomains:'abcd',attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}},
+  light:{label:'Claro',url:`https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,options:{maxZoom:20,subdomains:'abcd',attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}},
   streets:{label:'Ruas',url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',options:{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}},
   satellite:{label:'Satélite',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',options:{maxZoom:19,attribution:'Tiles &copy; Esri'}}
 };
