@@ -664,8 +664,11 @@ const maps={}, layers={}, baseLayers={}, markers={current:{},proposed:{}};
 let syncGuard=false;          // evita recursão ao sincronizar os dois mapas
 
 /* Mapas-base disponíveis no controlo do canto superior direito.
-   NÃO remover o ?key= do mapa Claro: sem ele a CARTO recusa os pedidos feitos
-   a partir do browser (por Origin/Referer) e o mapa fica em branco. */
+   NÃO remover o ?key= do mapa Claro. Já foi removido uma vez por se assumir
+   que este endpoint não o exigia, e o mapa ficou em branco no browser.
+   Um pedido isolado a um tile funciona com ou sem chave, por isso testar
+   com curl não deteta o problema — a diferença só aparece com o volume de
+   pedidos de uma vista real do mapa (limites aplicados a pedidos sem chave). */
 const CARTO_KEY='cb1_3m0w_1_d71241ca6f5a3af09f252fad';
 let activeBasemap='light';
 const BASEMAPS={
