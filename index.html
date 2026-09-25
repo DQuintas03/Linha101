@@ -6,6 +6,25 @@
 <title>TUB · Rede em Movimento · Dashboard unificada</title>
 <meta name="description" content="Simulação operacional e análise de frequência das linhas 18, 58, 97 e 101 do TUB.">
 
+<!-- Ícone do separador, dos favoritos e do ecrã inicial do telemóvel.
+     O apple-touch-icon tem fundo opaco porque o iOS pinta de preto os cantos
+     transparentes do logótipo. -->
+<link rel="icon" type="image/png" href="logo-tub.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#047cb4">
+
+<!-- Pré-visualização ao partilhar o link (WhatsApp, Teams, e-mail…).
+     A imagem tem de ser um endereço absoluto. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TUB · Transportes Urbanos de Braga">
+<meta property="og:title" content="Rede em Movimento · Linhas 18, 58, 97 e 101">
+<meta property="og:description" content="Simulação operacional e análise de frequência da proposta da nova linha 101 do TUB.">
+<meta property="og:url" content="https://dquintas03.github.io/Linha101/">
+<meta property="og:image" content="https://dquintas03.github.io/Linha101/logo-tub.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary">
+
 <!-- Folha de estilo do Leaflet (mapa). O onerror troca para um CDN alternativo,
      tal como acontece com o leaflet.js mais abaixo. -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -49,41 +68,63 @@ button,input,select{font:inherit}
    A faixa azul do topo e toda a ilustração (cidade, autocarro, estrada) são
    feitas só com CSS — não há imagens a carregar.
    ========================================================================== */
-.topbar{height:108px;color:white;position:relative;overflow:hidden;background:linear-gradient(90deg,#063f55 0%,#075c78 46%,#06465f 100%)}
-.topbar:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(3,47,65,.97) 0%,rgba(4,67,88,.82) 30%,rgba(5,83,108,.28) 56%,rgba(3,58,79,.72) 82%,rgba(3,48,67,.93) 100%)}
+/* O fundo é o azul do logótipo (#047cb4). À esquerda, onde está o logótipo,
+   fica exatamente essa cor para o quadrado se fundir com a faixa; para a
+   direita escurece ligeiramente, para dar profundidade à ilustração. */
+.topbar{height:108px;color:white;position:relative;overflow:hidden;background:#047cb4}
+.topbar:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent 0%,transparent 32%,rgba(2,84,126,.16) 58%,rgba(2,76,116,.34) 100%)}
 .topbar:after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:rgba(255,255,255,.13);z-index:2}
 .topinner{position:relative;z-index:5;max-width:1536px;height:100%;margin:auto;padding:0 34px;display:flex;align-items:center;justify-content:space-between}
 
 /* Bloco de texto da marca e metadados (data e relógio reais) à direita */
-.brandText{position:relative;z-index:5}
+.brand{position:relative;z-index:5;display:flex;align-items:center;gap:16px}
+.brandLogo{display:block;width:58px;height:58px;flex-shrink:0}
 .brandText h1{margin:0;font-size:28px;letter-spacing:-.025em}
-.brandText p{margin:4px 0 0;font-size:14px;color:#d4e7ee}
+.brandText p{margin:4px 0 0;font-size:14px;color:#e4f2f8}
 .headerMeta{position:relative;z-index:5;display:flex;align-items:center;gap:28px}
 .headerTagline{max-width:150px;text-align:right;font-size:12px;line-height:1.25;color:#d9edf3;font-weight:700}
 .headerDate{padding-left:24px;border-left:1px solid rgba(255,255,255,.35);text-align:right}
 .headerDate span{display:block;font-size:11px;color:#d8e8ee}
 .headerDate b{display:block;font-size:22px;line-height:1.15;margin-top:2px}
 
-/* Ilustração de fundo: brilho, estrada, silhueta da cidade, torres e autocarro */
-.bannerArt{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bannerGlow{position:absolute;left:30%;right:18%;top:-32px;height:150px;background:radial-gradient(ellipse at 58% 72%,rgba(28,148,180,.24),rgba(7,89,116,.07) 47%,transparent 72%)}
-.bannerRoad{position:absolute;left:28%;right:15%;bottom:-16px;height:50px;border-top:2px solid rgba(170,226,239,.09);transform:skewY(-2.4deg);opacity:.85}
-.bannerRoad:after{content:"";position:absolute;left:16%;right:5%;top:9px;border-top:1px dashed rgba(194,235,244,.08)}
-.bannerLine{position:absolute;left:35%;right:19%;bottom:5px;height:22px;background:linear-gradient(105deg,transparent 0 22%,rgba(120,201,219,.045) 23% 23.4%,transparent 24% 100%)}
-.bannerCity{position:absolute;left:31%;right:21%;bottom:0;height:72px;opacity:.42}
-.bannerCity .b{position:absolute;bottom:0;background:linear-gradient(180deg,rgba(1,43,60,.22),rgba(1,35,51,.72));border-top:1px solid rgba(159,220,234,.07)}
-.bannerCity .b:after{content:"";position:absolute;inset:8px 5px auto 5px;height:26px;background:repeating-linear-gradient(90deg,rgba(130,202,220,.07) 0 3px,transparent 3px 10px)}
-.bannerCity .b1{left:0;width:42px;height:39px}.bannerCity .b2{left:46px;width:28px;height:55px}.bannerCity .b3{left:79px;width:53px;height:34px}.bannerCity .b4{left:137px;width:34px;height:64px}.bannerCity .b5{left:176px;width:66px;height:46px}.bannerCity .b6{left:248px;width:31px;height:58px}.bannerCity .b7{left:286px;width:56px;height:38px}.bannerCity .b8{left:349px;width:40px;height:51px}.bannerCity .b9{left:397px;width:70px;height:43px}.bannerCity .b10{left:474px;width:35px;height:61px}
-.bannerTower{position:absolute;left:45%;bottom:26px;width:9px;height:47px;background:rgba(1,40,57,.56);opacity:.6}
-.bannerTower:before{content:"";position:absolute;left:-4px;top:-15px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:17px solid rgba(1,40,57,.56)}
-.bannerTower.t2{left:49%;height:38px;opacity:.46}
-.bannerBus{position:absolute;right:27%;bottom:7px;width:128px;height:66px;border-radius:17px 17px 7px 7px;background:linear-gradient(180deg,rgba(1,48,67,.26),rgba(0,40,58,.66));border:2px solid rgba(158,220,233,.09);box-shadow:0 10px 20px rgba(1,29,43,.18);transform:skewX(-3deg);opacity:.62}
-.bannerBus:before{content:"";position:absolute;left:12px;right:12px;top:9px;height:24px;border-radius:9px 9px 4px 4px;background:linear-gradient(90deg,rgba(77,153,176,.11),rgba(143,214,229,.06));border:1px solid rgba(154,220,234,.08)}
-.bannerBus:after{content:"";position:absolute;left:15px;right:15px;bottom:12px;height:9px;border-top:1px solid rgba(147,211,226,.08);border-bottom:1px solid rgba(147,211,226,.05)}
-.bannerWheel{position:absolute;bottom:-6px;width:18px;height:18px;border-radius:50%;background:#073c52;border:3px solid rgba(153,216,230,.08)}
-.bannerWheel.w1{left:18px}.bannerWheel.w2{right:18px}
-.bannerWind{position:absolute;top:10px;width:2px;height:21px;background:rgba(168,224,236,.08)}
-.bannerWind.w1{left:42px}.bannerWind.w2{left:73px}.bannerWind.w3{left:102px}
+/* Ilustração de fundo: cidade em camadas (desenhada por drawBannerCity) e um
+   autocarro TUB a circular na estrada. A máscara esconde-a por trás do
+   logótipo/título à esquerda e da data à direita, para o texto ficar limpo. */
+.bannerArt{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 24%,#000 42%,#000 78%,transparent 92%);
+          mask-image:linear-gradient(90deg,transparent 0,transparent 24%,#000 42%,#000 78%,transparent 92%)}
+.bannerCity{position:absolute;inset:0;width:100%;height:100%}
+.bannerCity .far{fill:rgba(255,255,255,.075)}
+.bannerCity .landmark{fill:rgba(255,255,255,.11)}
+.bannerCity .near{fill:rgba(1,56,94,.34)}
+.bannerCity .win{fill:rgba(255,255,255,.10)}
+.bannerCity .win.lit{fill:rgba(255,224,140,.50)}
+.bannerCity .tree{fill:rgba(1,70,96,.42)}
+.bannerCity .road{fill:rgba(1,46,80,.40)}
+.bannerCity .curb{stroke:rgba(255,255,255,.22);stroke-width:1}
+.bannerCity .lane{stroke:rgba(255,255,255,.35);stroke-width:1.4;stroke-dasharray:14 12}
+/* O autocarro é movido com transform (não com left) para não forçar layout:
+   o contentor ocupa a largura toda e desloca-se 0 → 100%; o autocarro está
+   encostado à sua esquerda, fora do ecrã no início. */
+.busMover{position:absolute;inset:auto 0 3px 0;height:39px;animation:busDrive 26s linear infinite}
+.bannerBus{position:absolute;left:-110px;bottom:0;width:104px;height:39px;overflow:visible}
+.bannerBus .busShadow{fill:rgba(0,30,55,.35)}
+.bannerBus .busBody{fill:#fff}
+.bannerBus .busStripe{fill:#047cb4}
+.bannerBus .busWin{fill:#0c3a58}
+.bannerBus .busDoor{fill:#0c3a58;opacity:.8}
+.bannerBus .busSign{fill:#ffc94a}
+.bannerBus .busLight{fill:#ffe39a}
+.bannerBus .busWheel circle{fill:#10283a}
+.bannerBus .busWheel .hub{fill:#c9d6de}
+.bannerBus .busWheel .spoke{stroke:#10283a;stroke-width:1}
+.bannerBus .busWheel{transform-box:fill-box;transform-origin:center;animation:wheelSpin .7s linear infinite}
+@keyframes busDrive{from{transform:translateX(0)}to{transform:translateX(calc(100% + 110px))}}
+@keyframes wheelSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .busMover{animation:none;transform:translateX(60%)}
+  .bannerBus .busWheel{animation:none}
+}
 
 
 /* ============================================================================
@@ -92,7 +133,7 @@ button,input,select{font:inherit}
    reprodução, velocidade e interruptores de linha.
    ========================================================================== */
 .app{max-width:1536px;margin:auto;padding:14px 20px 10px}
-.controlDeck{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:270px 230px 145px 165px 205px 1fr;gap:18px;align-items:end}
+.controlDeck{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:270px 230px 145px 200px 205px 1fr;gap:18px;align-items:end}
 .field{display:flex;flex-direction:column;gap:6px}
 .field>label{font-size:10px;font-weight:900;color:#61798a;letter-spacing:.07em;text-transform:uppercase}
 .field select,.field input[type=time]{height:38px;border:1px solid #cfdde5;border-radius:8px;background:white;padding:0 12px;color:var(--ink);font-weight:800}
@@ -105,7 +146,12 @@ button,input,select{font:inherit}
 /* Botões de reprodução e de velocidade */
 .buttonRow{display:flex;gap:8px}
 .btn{height:38px;min-width:40px;border:1px solid #d4e1e7;border-radius:8px;background:white;color:var(--ink);font-weight:900;cursor:pointer}
-.btn.play{background:var(--blue);border-color:var(--blue);color:white;font-size:17px;box-shadow:0 4px 10px rgba(13,133,181,.22)}
+.btn.play{display:grid;place-items:center;background:var(--blue);border-color:var(--blue);color:white;box-shadow:0 4px 10px rgba(13,133,181,.22)}
+.btn.play svg{width:18px;height:18px;fill:currentColor}
+/* Recuar / avançar 1 minuto: ícone de traço, como os restantes da app */
+.btn.step{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;color:#17364a;font-size:11px;font-weight:800}
+.btn.step svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn.step:hover{border-color:#b9d3de;background:#f4f9fb}
 .speed{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .speed .btn.active{background:linear-gradient(180deg,#0c708f,#07536d);border-color:#07536d;color:white}
 
@@ -503,6 +549,13 @@ button,input,select{font:inherit}
 .footerBar{height:52px;margin-top:14px;border-top:1px solid #dbe6ea;display:flex;align-items:center;justify-content:space-between;color:#718995;font-size:9px}
 .footerBar>div{display:flex;align-items:center;gap:8px}
 .footerLine{width:32px;height:1px;background:#1a6681}
+/* Link para o site da TUB: logótipo + endereço + ícone de link externo */
+.footerLink{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border:1px solid #d3e1e8;border-radius:999px;background:#fff;color:#17364a;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 2px 6px rgba(16,52,70,.06);transition:border-color .14s,box-shadow .14s,color .14s}
+.footerLink img{display:block;width:22px;height:22px}
+.footerLink svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+.footerLink:hover{border-color:#047cb4;color:#047cb4;box-shadow:0 4px 12px rgba(4,124,180,.16)}
+.footerLink:hover svg{opacity:1}
+.footerLink:focus-visible{outline:2px solid #047cb4;outline-offset:2px}
 
 
 /* ============================================================================
@@ -522,18 +575,16 @@ button,input,select{font:inherit}
 }
 @media(max-width:1050px){
   .headerTagline{display:none}
-  .bannerBus{right:18%;opacity:.48}
-  .bannerCity{left:28%;right:8%;opacity:.32}
 }
 @media(max-width:760px){
   .topbar{height:auto;padding:16px 0}
   .topinner{align-items:flex-start;gap:16px}
   .headerTagline,.headerDate{display:none}
   .brandText h1{font-size:23px}
+  .brand{gap:12px}
+  .brandLogo{width:44px;height:44px}
   .brandText p{font-size:11px;max-width:310px}
   .bannerArt{opacity:.55}
-  .bannerBus{right:-5%;opacity:.28}
-  .bannerCity{left:43%;right:-10%;opacity:.24}
   .controlDeck{grid-template-columns:1fr 1fr}
   .workspace,.maps.compare,.analysisGrid{grid-template-columns:1fr}
   .kpiGrid{grid-template-columns:1fr 1fr}
@@ -551,15 +602,34 @@ button,input,select{font:inherit}
      ======================================================================= -->
 <header class="topbar">
   <div class="bannerArt" aria-hidden="true">
-    <div class="bannerGlow"></div><div class="bannerRoad"></div><div class="bannerLine"></div>
-    <div class="bannerCity"><i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i><i class="b b5"></i><i class="b b6"></i><i class="b b7"></i><i class="b b8"></i><i class="b b9"></i><i class="b b10"></i></div>
-    <i class="bannerTower"></i><i class="bannerTower t2"></i>
-    <div class="bannerBus"><i class="bannerWind w1"></i><i class="bannerWind w2"></i><i class="bannerWind w3"></i><i class="bannerWheel w1"></i><i class="bannerWheel w2"></i></div>
+    <!-- Cidade: desenhada por drawBannerCity() no arranque -->
+    <svg class="bannerCity" id="bannerCity" viewBox="0 0 1900 108" preserveAspectRatio="xMidYMax slice"></svg>
+    <!-- Autocarro TUB a circular da esquerda para a direita -->
+    <div class="busMover">
+      <svg class="bannerBus" viewBox="0 0 112 42">
+        <ellipse class="busShadow" cx="56" cy="39.5" rx="50" ry="2.2"/>
+        <path class="busBody" d="M8 4h88c7 0 12 5 13 12l1 12v4.5a2.5 2.5 0 0 1-2.5 2.5H5.5A2.5 2.5 0 0 1 3 32.5V9a5 5 0 0 1 5-5Z"/>
+        <path class="busStripe" d="M3 25h107v7.5a2.5 2.5 0 0 1-2.5 2.5H5.5A2.5 2.5 0 0 1 3 32.5Z"/>
+        <rect class="busWin" x="9" y="9" width="15" height="11" rx="1.6"/>
+        <rect class="busWin" x="27" y="9" width="15" height="11" rx="1.6"/>
+        <rect class="busWin" x="45" y="9" width="15" height="11" rx="1.6"/>
+        <rect class="busWin" x="63" y="9" width="12" height="11" rx="1.6"/>
+        <rect class="busDoor" x="78" y="9" width="10" height="23" rx="1.4"/>
+        <path class="busWin" d="M91 9h5.5c4 0 7 3 8 7l.8 5H91Z"/>
+        <rect class="busSign" x="89" y="5.2" width="13" height="2.6" rx=".8"/>
+        <circle class="busLight" cx="108" cy="29" r="1.4"/>
+        <g class="busWheel"><circle cx="25" cy="35" r="5.6"/><circle class="hub" cx="25" cy="35" r="2.2"/><path class="spoke" d="M25 31.2v7.6M21.2 35h7.6"/></g>
+        <g class="busWheel"><circle cx="89" cy="35" r="5.6"/><circle class="hub" cx="89" cy="35" r="2.2"/><path class="spoke" d="M89 31.2v7.6M85.2 35h7.6"/></g>
+      </svg>
+    </div>
   </div>
   <div class="topinner">
-    <div class="brandText">
-      <h1>TUB · Rede em Movimento</h1>
-      <p>Simulação operacional e análise de frequência · Linhas 18, 58, 97 e 101</p>
+    <div class="brand">
+      <img class="brandLogo" src="logo-tub.png" alt="TUB" width="58" height="58">
+      <div class="brandText">
+        <h1>Rede em Movimento</h1>
+        <p>Simulação operacional e análise de frequência · Linhas 18, 58, 97 e 101</p>
+      </div>
     </div>
     <div class="headerMeta">
       <div class="headerTagline">Cenários para uma<br>mobilidade melhor.</div>
@@ -602,9 +672,9 @@ button,input,select{font:inherit}
     <div class="field">
       <label>Reprodução</label>
       <div class="buttonRow">
-        <button type="button" class="btn" id="backBtn" title="Recuar 1 minuto" aria-label="Recuar 1 minuto">«</button>
-        <button type="button" class="btn play" id="playBtn" title="Reproduzir / pausar" aria-label="Reproduzir ou pausar">▶</button>
-        <button type="button" class="btn" id="forwardBtn" title="Avançar 1 minuto" aria-label="Avançar 1 minuto">»</button>
+        <button type="button" class="btn step" id="backBtn" title="Recuar 1 minuto" aria-label="Recuar 1 minuto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3L3.5 8.2"/><path d="M3.5 3.5v4.7h4.7"/></svg><span>1 min</span></button>
+        <button type="button" class="btn play" id="playBtn" title="Reproduzir" aria-label="Reproduzir"></button>
+        <button type="button" class="btn step" id="forwardBtn" title="Avançar 1 minuto" aria-label="Avançar 1 minuto"><span>1 min</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.8-6.3l2.8 2.5"/><path d="M20.5 3.5v4.7h-4.7"/></svg></button>
       </div>
     </div>
     <div class="field">
@@ -712,11 +782,11 @@ button,input,select{font:inherit}
   <!-- ===================== RODAPÉ ===================== -->
   <footer class="footerBar">
     <div>
-      <i class="footerLine"></i><span>Transporte Urbano de Braga</span>
+      <i class="footerLine"></i><span>Transportes Urbanos de Braga</span>
       <span>·</span><span>Dados simulados</span>
       <span>·</span><span>Para planeamento e análise operacional</span>
     </div>
-    <div><a href="https://tub.pt/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;font-weight:800">tub.pt</a></div>
+    <div><a class="footerLink" href="https://tub.pt/" target="_blank" rel="noopener noreferrer" title="Abrir o site da TUB numa nova janela"><img src="logo-tub.png" alt="" width="22" height="22"><span>tub.pt</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div>
   </footer>
 </main>
 
@@ -1867,9 +1937,19 @@ function updatePlaybackFrame(){
 
 function setTime(m){currentMinute=Math.max(START,Math.min(END,m));updateAll(true)}
 
+/* Ícone e rótulos do botão central, conforme a reprodução está ou não a correr. */
+const PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.6v12.8a1.1 1.1 0 0 0 1.7.9l10-6.4a1.1 1.1 0 0 0 0-1.8l-10-6.4A1.1 1.1 0 0 0 8 5.6Z"/></svg>';
+const PAUSE_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.3"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.3"/></svg>';
+function renderPlayButton(){
+  const b=document.getElementById('playBtn');
+  b.innerHTML=playing?PAUSE_ICON:PLAY_ICON;
+  b.title=playing?'Pausar':'Reproduzir';
+  b.setAttribute('aria-label',b.title);
+}
+
 function play(){
   playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'Ⅱ':'▶';
+  renderPlayButton();
   if(playing){lastTick=performance.now();tick()}
   else if(timer){cancelAnimationFrame(timer);timer=null}
 }
@@ -1884,7 +1964,7 @@ function tick(now=performance.now()){
   const next=currentMinute+dt*speed/60;
   if(next>=END){
     currentMinute=END;playing=false;timer=null;
-    document.getElementById('playBtn').textContent='▶';
+    renderPlayButton();
     updateAll(true);
     return;
   }
@@ -1941,6 +2021,51 @@ function renderLegend(){
   }));
 }
 
+/* Cidade do cabeçalho, em SVG (viewBox 1900×108, chão em y=94):
+     far  — silhuetas claras ao fundo, com uma igreja de duas torres
+            inspirada na Sé de Braga
+     near — prédios escuros à frente, com janelas (algumas acesas)
+     tree, road — árvores, passeio e estrada com o traço do eixo.
+   Usa um gerador pseudo-aleatório com semente fixa, para a cidade ser
+   sempre a mesma em todas as visitas. */
+function drawBannerCity(){
+  const svg=document.getElementById('bannerCity');if(!svg)return;
+  let seed=101;
+  const rnd=()=>{seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+  const G=94,r1=v=>v.toFixed(1);
+  let far='',near='',trees='';
+
+  for(let x=-10;x<1910;){
+    const w=24+rnd()*34,h=24+rnd()*34;
+    far+=`<rect class="far" x="${r1(x)}" y="${r1(G-h)}" width="${r1(w)}" height="${r1(h)}"/>`;
+    if(rnd()<.25)far+=`<rect class="far" x="${r1(x+w*.35)}" y="${r1(G-h-8)}" width="${r1(w*.3)}" height="8"/>`;
+    x+=w+1+rnd()*5;
+  }
+  // Igreja de duas torres (Sé) e uma torre alta, no terço central-direito.
+  const church=cx=>`<rect class="landmark" x="${cx-26}" y="${G-60}" width="15" height="60"/><polygon class="landmark" points="${cx-27},${G-60} ${cx-18.5},${G-76} ${cx-10},${G-60}"/>`
+    +`<rect class="landmark" x="${cx+11}" y="${G-60}" width="15" height="60"/><polygon class="landmark" points="${cx+10},${G-60} ${cx+18.5},${G-76} ${cx+27},${G-60}"/>`
+    +`<rect class="landmark" x="${cx-11}" y="${G-42}" width="22" height="42"/><polygon class="landmark" points="${cx-12},${G-42} ${cx},${G-54} ${cx+12},${G-42}"/>`
+    +`<rect class="landmark" x="${cx-19.2}" y="${G-84}" width="1.4" height="9"/><rect class="landmark" x="${cx-21.5}" y="${G-81}" width="6" height="1.4"/>`
+    +`<rect class="landmark" x="${cx+17.8}" y="${G-84}" width="1.4" height="9"/><rect class="landmark" x="${cx+15.5}" y="${G-81}" width="6" height="1.4"/>`;
+  far+=church(1040)+`<rect class="landmark" x="1290" y="${G-78}" width="22" height="78"/><rect class="landmark" x="1298" y="${G-90}" width="2" height="12"/>`;
+
+  for(let x=-20;x<1910;){
+    const w=32+rnd()*46,h=16+rnd()*30;
+    near+=`<rect class="near" x="${r1(x)}" y="${r1(G-h)}" width="${r1(w)}" height="${r1(h)}"/>`;
+    const cols=Math.floor((w-6)/9),rows=Math.floor((h-6)/9);
+    for(let c=0;c<cols;c++)for(let r=0;r<rows;r++){
+      near+=`<rect class="win${rnd()<.16?' lit':''}" x="${r1(x+5+c*9)}" y="${r1(G-h+5+r*9)}" width="4" height="5"/>`;
+    }
+    x+=w+14+rnd()*42;
+  }
+  for(let x=30;x<1900;x+=70+rnd()*90){
+    const r=5+rnd()*4;
+    trees+=`<rect class="tree" x="${r1(x-1)}" y="${r1(G-r-6)}" width="2" height="${r1(r+6)}"/><circle class="tree" cx="${r1(x)}" cy="${r1(G-r-6)}" r="${r1(r)}"/>`;
+  }
+  const road=`<rect class="road" x="0" y="${G}" width="1900" height="${108-G}"/><line class="curb" x1="0" y1="${G+.5}" x2="1900" y2="${G+.5}"/><line class="lane" x1="0" y1="${G+8}" x2="1900" y2="${G+8}"/>`;
+  svg.innerHTML=far+near+trees+road;
+}
+
 /* Data e hora reais no cabeçalho. */
 function updateRealClock(){
   const d=new Date();
@@ -1966,6 +2091,7 @@ function wire(){
 
   // --- Reprodução. Os saltos de 1 minuto arredondam primeiro, para que
   //     recuar e avançar devolvam sempre minutos inteiros. ---
+  renderPlayButton();
   document.getElementById('playBtn').addEventListener('click',play);
   document.getElementById('backBtn').addEventListener('click',()=>{if(playing)play();setTime(Math.round(currentMinute)-1)});
   document.getElementById('forwardBtn').addEventListener('click',()=>{if(playing)play();setTime(Math.round(currentMinute)+1)});
@@ -2012,6 +2138,7 @@ function wire(){
 }
 
 function boot(){
+  drawBannerCity();
   renderLegend();wire();setMode('proposed');
   // Sem o Leaflet os mapas não arrancam, mas a dashboard continua utilizável.
   if(!window.L){
