@@ -1514,7 +1514,14 @@ function corridorStats(scenario,view){
     const minute=+Object.keys(f).sort((a,b)=>f[b]-f[a])[0];
     return {line,minute,fixed:f[minute]/ms.length>=.8};
   }).filter(Boolean);
-  return {lines,events,pattern,minutes,max:gaps.length?Math.max(...gaps):null,cadenced:minutes.length>0&&minutes.every(m=>m.fixed)};
+  // O intervalo máximo mede-se só no período em que todas as linhas do
+  // corredor circulam: exclui o arranque e o fecho do serviço, quando só
+  // uma delas está em serviço (ex.: a última 97 recolhe em Celeirós).
+  const bounds=lines.map(l=>events.filter(e=>e.line===l)).filter(x=>x.length);
+  const from=Math.max(...bounds.map(x=>x[0].time)),to=Math.min(...bounds.map(x=>x.at(-1).time));
+  const coreGaps=bounds.length?intervalValues(events.filter(e=>e.time>=from&&e.time<=to)):[];
+  const max=coreGaps.length?Math.max(...coreGaps):(gaps.length?Math.max(...gaps):null);
+  return {lines,events,pattern,minutes,max,cadenced:minutes.length>0&&minutes.every(m=>m.fixed)};
 }
 
 /* "Relógio" de uma hora: onde passa cada linha e o intervalo entre elas. */
