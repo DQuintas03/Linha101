@@ -355,6 +355,87 @@ button,input,select{font:inherit}
 .compareDelta.bad{color:#c0443b;font-weight:900}
 .compareDelta.neutral{color:#6d7e88;font-weight:850}
 
+/* --- Dashboard do modo Comparar ------------------------------------------
+   Cada cenário tem uma identidade própria, distinta das cores das linhas:
+   Proposto em azul TUB, Atual em cinza-ardósia. As pastilhas das linhas
+   mantêm a sua cor, porque é ela que identifica a linha. */
+:root{--prop:#0d85b5;--prop-ink:#075b77;--prop-soft:#eef7fa;--cur:#9aabb5;--cur-ink:#566b77;--cur-soft:#f4f6f8}
+.dashHeaderRight{display:flex;align-items:center;gap:12px}
+.scenarioKey{display:inline-flex;align-items:center;gap:12px;font-size:10px;font-weight:800;color:#48606d}
+.scenarioKey span{display:inline-flex;align-items:center;gap:5px}
+.scenarioKey i{display:inline-block;width:12px;height:8px;border-radius:2px}
+.scenarioKey .kProp i{background:var(--prop)}
+.scenarioKey .kCur i{background:var(--cur)}
+
+/* KPIs: valor proposto em destaque e o atual por baixo */
+.compareKpi strong{border-left:3px solid var(--prop);padding-left:7px}
+.compareKpi .kpiCur{display:flex;align-items:center;gap:5px;margin-top:4px;padding-left:10px;border-left:3px solid var(--cur);font-style:normal;font-size:10px;color:var(--cur-ink);font-weight:700}
+.compareKpi .kpiCur b{font-weight:900;color:#3e515c}
+
+/* Coordenação em escala real: a mesma hora fica na mesma posição vertical
+   nos dois cenários. O bloco e o eixo partilham as mesmas margens laterais
+   (18px à esquerda = 14 de padding + 4 de barra; 13px à direita). */
+.coordCompare .coordIntro{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;font-size:10px}
+.gapKey{display:inline-flex;gap:10px;color:#5f7682;font-weight:700}
+.gapKey span{display:inline-flex;align-items:center;gap:4px}
+.gapKey i{display:inline-block;width:14px;height:4px;border-radius:2px}
+.coordScroll{overflow-x:auto;padding:0 8px 4px;scrollbar-width:thin}
+.coordScale{min-width:720px}
+.cAxis{position:relative;height:16px;margin:0 13px 0 18px}
+.cAxis span{position:absolute;top:0;transform:translateX(-50%);font-size:9.5px;font-weight:800;color:#7b8f9a;white-space:nowrap}
+.scenarioBlock{margin-top:8px;padding:8px 12px 4px 14px;border:1px solid #dfe9ed;border-left-width:4px;border-radius:10px;background:#fff}
+.scenarioBlock.proposed{border-left-color:var(--prop)}
+.scenarioBlock.current{border-left-color:var(--cur);background:var(--cur-soft)}
+.scenarioTag{display:inline-block;padding:3px 9px;border-radius:999px;color:#fff;font-size:9.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+.proposed .scenarioTag{background:var(--prop)}
+.current .scenarioTag{background:var(--cur-ink)}
+.cTrack{margin-top:6px}
+.cTrackHead{display:flex;justify-content:space-between;gap:12px;font-size:10.5px;font-weight:850;color:#183d56}
+.cTrackHead span:last-child{font-weight:650;color:#6f8591}
+.cTimeline{position:relative;height:86px}
+.cTimeline .rail{position:absolute;left:0;right:0;top:46px;height:2px;background:#d3e0e6}
+.cTimeline .tLine{position:absolute;top:8px;bottom:8px;width:1px;background:#e3ecf0}
+.current .cTimeline .tLine{background:#e2e8ec}
+.cSeg{position:absolute;z-index:1;top:45px;height:4px;border-radius:2px}
+.cSeg.target{background:#5cc49b}.cSeg.mid{background:#f0b94f}.cSeg.alert{background:#ec6b61}.cSeg.neutral{background:#b7c6cd}
+.cGap{position:absolute;z-index:3;top:31px;transform:translateX(-50%);padding:0 4px;border-radius:4px;background:#fff;font-size:9.5px;font-weight:850;line-height:13px;white-space:nowrap}
+.cGap.target{color:#16865c}.cGap.mid{color:#9b620b}.cGap.alert{color:#be4038}.cGap.neutral{color:#526a76}
+.cEv{position:absolute;z-index:4;top:0;bottom:0;width:0;cursor:pointer}
+.cEv .coordLine{position:absolute;left:0;top:18px;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:19px;padding:0 6px;border-radius:5px;color:var(--line-color);background:color-mix(in srgb,var(--line-color) 13%,white);border:1px solid color-mix(in srgb,var(--line-color) 25%,white);font-size:10px;font-weight:950;line-height:1}
+.cEv .coordDot{position:absolute;left:-6px;top:41px;width:12px;height:12px;border-radius:50%;background:var(--line-color);border:2px solid #fff;box-shadow:0 0 0 2px color-mix(in srgb,var(--line-color) 25%,transparent)}
+.cEv time{position:absolute;left:0;top:57px;transform:translateX(-50%);color:#16384f;font-size:10px;font-weight:900;line-height:1;white-space:nowrap}
+.cEv.lvl1 .coordLine{top:0}
+.cEv.lvl1 time{top:71px}
+.cEv:hover .coordDot{transform:scale(1.25)}
+.cEmpty{position:absolute;left:0;right:0;top:36px;text-align:center;font-size:10px;color:#7b8d96}
+
+/* Gráficos com barras agrupadas: proposto (azul) ao lado do atual (cinza) */
+.hourCol.pair .bars{flex:1;min-height:0;width:84%;display:flex;align-items:flex-end;gap:1px}
+.hourCol.pair .bars i{flex:1;width:auto;min-height:3px;border-radius:2px 2px 0 0}
+.hourCol.pair .hp{background:var(--prop)}
+.hourCol.pair .hc{background:var(--cur)}
+.hourCol.pair:hover .hp,.hourCol.pair.selected .hp{background:#07617f!important}
+.hourCol.pair:hover .hc,.hourCol.pair.selected .hc{background:#7b8d98!important}
+.barCol.pair>span{display:flex;justify-content:center;gap:6px;font-size:9.5px}
+.barCol.pair .np{color:var(--prop-ink)}
+.barCol.pair .nc{color:var(--cur-ink)}
+.barTrack.pair{gap:2px;padding:0 3px}
+.barTrack.pair .barFill{width:50%;border-radius:2px 2px 0 0}
+.barFill.p{background:var(--prop)}
+.barFill.c{background:var(--cur)}
+.barCol.targetBin small{color:#16865c;font-weight:900}
+
+/* Painel de detalhe com os dois cenários separados */
+.compareFull .detailBody{max-height:320px}
+.detailGroup{display:flex;justify-content:space-between;padding:6px 9px;border-top:1px solid #e3ecf0;border-left:3px solid var(--prop);background:var(--prop-soft);color:var(--prop-ink);font-size:10px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.detailGroup:first-child{border-top:0}
+.detailGroup.current{border-left-color:var(--cur);background:var(--cur-soft);color:var(--cur-ink)}
+.detailGroup span{font-weight:700;letter-spacing:0;text-transform:none}
+
+/* O mapa proposto fica à esquerda no modo Comparar, a par da dashboard,
+   que mostra sempre o proposto primeiro. */
+.maps.compare #proposedCard{order:-1}
+
 
 /* ============================================================================
    10 · MARCADORES, TOOLTIPS E POPUPS NO MAPA
@@ -662,6 +743,7 @@ let detailSelection=null;     // o que o painel de detalhe está a mostrar
 /* Objetos Leaflet, indexados por cenário */
 const maps={}, layers={}, baseLayers={}, markers={current:{},proposed:{}};
 let syncGuard=false;          // evita recursão ao sincronizar os dois mapas
+const mapNeedsFit={};         // mapas que ainda não foram enquadrados por estarem escondidos
 
 /* Mapas-base disponíveis no controlo do canto superior direito.
    NÃO remover o ?key= do mapa Claro. Já foi removido uma vez por se assumir
@@ -869,9 +951,14 @@ function focusRouteCoords(){
   return all;
 }
 
-/* Enquadra o mapa no corredor selecionado ou, à falta dele, na rede toda. */
+/* Enquadra o mapa no corredor selecionado ou, à falta dele, na rede toda.
+   Um mapa escondido tem tamanho 0 e o fitBounds levá-lo-ia ao zoom máximo;
+   nesse caso fica marcado como pendente e é enquadrado quando aparecer. */
 function fitFocus(map){
   if(!map)return;
+  const size=map.getSize();
+  if(!size.x||!size.y){mapNeedsFit[map._scenario]=true;return}
+  mapNeedsFit[map._scenario]=false;
   let all=isCorridorFocus()?focusRouteCoords():[];
   if(!all.length)Object.values(DATA.routes).forEach(r=>Object.values(r).forEach(v=>{if(Array.isArray(v)&&Array.isArray(v[0]))v.forEach(c=>all.push([c[1],c[0]]))}));
   if(all.length)map.fitBounds(all,{padding:[24,24]});
@@ -928,13 +1015,20 @@ function addBasemapControl(map){
 /* --- Criação do mapa ----------------------------------------------------- */
 function initMap(id,scenario){
   const map=L.map(id,{zoomControl:true,preferCanvas:true});
+  map._scenario=scenario;
   baseLayers[scenario]=makeBasemapLayer(activeBasemap).addTo(map);
   map.getContainer().classList.toggle('basemap-satellite',activeBasemap==='satellite');
   maps[scenario]=map;
   layers[scenario]={routes:L.layerGroup().addTo(map),pois:L.layerGroup().addTo(map),buses:L.layerGroup().addTo(map)};
   addBasemapControl(map);
-  drawRoutes(scenario);drawPois(scenario);fitFocus(map);
+  // A vista tem de existir antes de desenhar os traçados (o desvio lateral
+  // depende do zoom). Um mapa escondido recebe uma vista provisória.
+  fitFocus(map);
+  if(!map._loaded)map.setView([DATA.stops.pinheiro[1],DATA.stops.pinheiro[0]],13);
+  drawRoutes(scenario);drawPois(scenario);
   map.on('moveend zoomend',()=>syncMaps(scenario));
+  // O desvio lateral dos traçados é calculado em píxeis, logo depende do zoom.
+  map.on('zoomend',()=>drawRoutes(scenario));
 }
 
 /* No modo Comparar os dois mapas andam sempre juntos. */
@@ -948,9 +1042,39 @@ function syncMaps(source){
 }
 
 /* --- Traçados ------------------------------------------------------------ */
+/* Desvio lateral de cada linha, em píxeis de ecrã. A 18 partilha Esporões
+   com a 97 e a 58 partilha Lomar com a 101; sem desvio, a linha desenhada
+   por cima tapa por completo a outra. Assim ficam lado a lado, como num
+   esquema de rede. O sinal do desvio segue o sentido de marcha, pelo que a
+   ida e a volta da mesma rua ficam em lados opostos. */
+const ROUTE_OFFSET_PX={'18':-5.25,'58':-1.75,'97':1.75,'101':5.25};
+
+/* Devolve o traçado [lon,lat] deslocado px píxeis para o lado, como [lat,lng]
+   prontos para o Leaflet. Cada vértice é empurrado ao longo da bissetriz das
+   normais dos dois segmentos adjacentes (junta em esquadria, limitada). */
+function offsetRoute(map,coords,px){
+  const z=map.getZoom();
+  const pts=[];
+  for(const c of coords){
+    const p=map.project([c[1],c[0]],z);
+    const prev=pts.at(-1);
+    if(!prev||prev.distanceTo(p)>0.01)pts.push(p);
+  }
+  if(!px||pts.length<2)return pts.map(p=>map.unproject(p,z));
+  const normal=(a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy);return {x:-dy/l,y:dx/l}};
+  return pts.map((p,i)=>{
+    const n1=i>0?normal(pts[i-1],p):null,n2=i<pts.length-1?normal(p,pts[i+1]):null;
+    let n=n1&&n2?{x:n1.x+n2.x,y:n1.y+n2.y}:(n1||n2);
+    const l=Math.hypot(n.x,n.y);
+    if(l<1e-6)n=n1;else n={x:n.x/l,y:n.y/l};
+    const cos=n1&&n2?Math.max(.5,n.x*n1.x+n.y*n1.y):1;
+    return map.unproject(L.point(p.x+n.x*px/cos,p.y+n.y*px/cos),z);
+  });
+}
+
 /* Ida a cheio, volta a tracejado. Clicar numa linha filtra toda a aplicação. */
 function drawRoutes(scenario){
-  const g=layers[scenario]?.routes;if(!g)return;
+  const g=layers[scenario]?.routes,map=maps[scenario];if(!g||!map?._loaded)return;
   g.clearLayers();
   for(const line of LINES){
     if(!visibleLines[line]||(scenario==='current'&&line==='101'))continue;
@@ -959,7 +1083,7 @@ function drawRoutes(scenario){
     const add=(coords,dir,baseWeight,dashed=false)=>{
       if(!coords?.length)return;
       const normal={color:c,weight:isSel?baseWeight+2:baseWeight,opacity:isDim?.14:(isSel?.98:(dashed?.32:.70)),dashArray:dashed?'7 7':null};
-      const pl=L.polyline(coords.map(p=>[p[1],p[0]]),normal).addTo(g);
+      const pl=L.polyline(offsetRoute(map,coords,ROUTE_OFFSET_PX[line]),normal).addTo(g);
       pl.bindTooltip(`Linha ${line} · ${dir}`,{sticky:true,className:'poiTip'});
       pl.on('mouseover',()=>pl.setStyle({weight:baseWeight+3,opacity:1}));
       pl.on('mouseout',()=>pl.setStyle(normal));
@@ -1192,9 +1316,12 @@ function filterBanner(){
   return '';
 }
 
+/* Primeira passagem a partir do minuto atual, em qualquer sentido. */
+function nextEvent(fs){return [...fs.a,...fs.b].filter(e=>e.time>=currentMinute-.01).sort((a,b)=>a.time-b.time)[0]}
+
 /* Os quatro KPIs do topo. Cada um abre um detalhe ou salta no tempo. */
 function dashboardKpisHtml(scenario,m){
-  const next=[...m.fs.a,...m.fs.b].filter(e=>e.time>=currentMinute-.01).sort((a,b)=>a.time-b.time)[0];
+  const next=nextEvent(m.fs);
   const largest=upcomingLargestGap(m.fs,120);
   const next60=futureEvents(m.fs,60);
   const nextTxt=next?`${next.line} · ${fmt(next.time)}`:'—';
@@ -1230,10 +1357,14 @@ function coordinationHtml(m){
 }
 
 /* Barras de passagens por hora (06h–22h, a janela da simulação). */
-function hourlyHtml(fs,scenario){
+function hourCounts(fs){
   const counts={};
   for(let h=Math.floor(START/60);h<=Math.floor(END/60);h++)counts[h]=0;
   [...fs.a,...fs.b].forEach(e=>{const h=Math.floor(e.time/60);if(h in counts)counts[h]++});
+  return counts;
+}
+function hourlyHtml(fs,scenario){
+  const counts=hourCounts(fs);
   const mx=Math.max(1,...Object.values(counts)),sel=Math.floor(currentMinute/60);
   return `<div class="hourBars">${Object.entries(counts).map(([h,n])=>{
       const hh=String(h).padStart(2,'0');
@@ -1245,9 +1376,9 @@ function hourlyHtml(fs,scenario){
 /* Histograma dos intervalos por escalão. */
 function binKeyLabel(k){return {'0-5':'0–5','6-10':'6–10','11-14':'11–14','15-20':'15–20','21-30':'21–30','gt30':'>30'}[k]||k}
 function binPredicate(k,g){return k==='0-5'?g<=5:k==='6-10'?g>=6&&g<=10:k==='11-14'?g>=11&&g<=14:k==='15-20'?g>=15&&g<=20:k==='21-30'?g>=21&&g<=30:g>30}
+const GAP_BINS=['0-5','6-10','11-14','15-20','21-30','gt30'];
 function distributionHtml(gaps,scenario){
-  const bins=['0-5','6-10','11-14','15-20','21-30','gt30'];
-  const vals=bins.map(k=>({k,l:binKeyLabel(k),n:gaps.filter(g=>binPredicate(k,g)).length}));
+  const vals=GAP_BINS.map(k=>({k,l:binKeyLabel(k),n:gaps.filter(g=>binPredicate(k,g)).length}));
   const mx=Math.max(1,...vals.map(x=>x.n));
   return `<div class="miniBars">${vals.map(v=>`<div class="barCol ${detailSelection?.type==='bin'&&detailSelection.bin===v.k?'selected':''}" data-action="bin" data-bin="${v.k}" data-scenario="${scenario}"><span>${v.n}</span><div class="barTrack"><i class="barFill ${v.k==='15-20'?'target':''}" style="height:${Math.max(3,100*v.n/mx)}%"></i></div><small>${v.l}</small></div>`).join('')}</div>`;
 }
@@ -1282,23 +1413,26 @@ function detailPanelHtml(scenario,m){
     rows=[`<div class="detailRow"><span class="linePill" style="background:${DATA.meta[v.line].color}">${v.line}</span><div><b>${fmt(r._start)} → ${fmt(r._end)}</b><div class="muted">${r.kind==='base'?'Serviço base':r.kind==='reinforcement'?'Reforço':'Especial'}</div></div><div class="right">${r.note||''}</div></div>`];
   }
 
-  if(detailSelection.type==='active'){
-    title='Veículos em circulação agora';
-    rows=activeVehicleRows(scenario).map(x=>`<div class="detailRow" data-action="vehicle" data-id="${x.id}" data-line="${x.line}" data-scenario="${scenario}"><span class="linePill" style="background:${DATA.meta[x.line].color}">${x.line}</span><div><b>${x.vehicle}</b><div class="muted">${x.dir}</div></div><div class="right">até ${fmt(x.end)}</div></div>`);
-  }
+  if(detailSelection.type==='bin'&&detailSelection.scenario&&detailSelection.scenario!==scenario)return '';
+  if(detailSelection.type!=='vehicle')({title,rows}=detailListRows(scenario,m));
+  return detailPanelShell(title,rows.length?rows.join(''):'<div class="detailEmpty">Sem ocorrências neste âmbito.</div>');
+}
 
-  if(detailSelection.type==='next60'){
-    title='Serviços nos próximos 60 minutos';
-    rows=futureEvents(m.fs,60).map(e=>`<div class="detailRow" data-action="service" data-time="${e.time}" data-line="${e.line}"><span class="linePill" style="background:${DATA.meta[e.line].color}">${e.line}</span><div><b>${fmt(e.time)}</b><div class="muted">${e.vehicle}</div></div><div class="right">${Math.max(0,Math.round(e.time-currentMinute))} min</div></div>`);
-  }
+function detailPanelShell(title,body){
+  return `<div class="detailPanel"><div class="detailHead"><strong>${title}</strong><button type="button" data-action="close-detail" aria-label="Fechar detalhe">×</button></div><div class="detailBody">${body}</div></div>`;
+}
 
-  if(detailSelection.type==='bin'){
-    if(detailSelection.scenario&&detailSelection.scenario!==scenario)return '';
-    title=`Intervalos ${binKeyLabel(detailSelection.bin)} min`;
-    rows=allGapRows(m.fs).filter(x=>binPredicate(detailSelection.bin,x.gap)).map(x=>`<div class="detailRow" data-action="interval" data-time="${x.start}"><span class="coordGap ${gapClass(x.gap)}">${x.gap}</span><div><b>${fmt(x.start)} → ${fmt(x.end)}</b><div class="muted">${x.title}</div></div><div class="right">ir para ${fmt(x.start)}</div></div>`);
-  }
-
-  return `<div class="detailPanel"><div class="detailHead"><strong>${title}</strong><button type="button" data-action="close-detail" aria-label="Fechar detalhe">×</button></div><div class="detailBody">${rows.length?rows.join(''):'<div class="detailEmpty">Sem ocorrências neste âmbito.</div>'}</div></div>`;
+/* Título e linhas das listas do detalhe (veículos, próximos 60 min,
+   intervalos de um escalão) para um cenário. */
+function detailListRows(scenario,m){
+  const t=detailSelection.type;
+  if(t==='active')return {title:'Veículos em circulação agora',
+    rows:activeVehicleRows(scenario).map(x=>`<div class="detailRow" data-action="vehicle" data-id="${x.id}" data-line="${x.line}" data-scenario="${scenario}"><span class="linePill" style="background:${DATA.meta[x.line].color}">${x.line}</span><div><b>${x.vehicle}</b><div class="muted">${x.dir}</div></div><div class="right">até ${fmt(x.end)}</div></div>`)};
+  if(t==='next60')return {title:'Serviços nos próximos 60 minutos',
+    rows:futureEvents(m.fs,60).map(e=>`<div class="detailRow" data-action="service" data-time="${e.time}" data-line="${e.line}"><span class="linePill" style="background:${DATA.meta[e.line].color}">${e.line}</span><div><b>${fmt(e.time)}</b><div class="muted">${e.vehicle}</div></div><div class="right">${Math.max(0,Math.round(e.time-currentMinute))} min</div></div>`)};
+  if(t==='bin')return {title:`Intervalos ${binKeyLabel(detailSelection.bin)} min`,
+    rows:allGapRows(m.fs).filter(x=>binPredicate(detailSelection.bin,x.gap)).map(x=>`<div class="detailRow" data-action="interval" data-time="${x.start}"><span class="coordGap ${gapClass(x.gap)}">${x.gap}</span><div><b>${fmt(x.start)} → ${fmt(x.end)}</b><div class="muted">${x.title}</div></div><div class="right">ir para ${fmt(x.start)}</div></div>`)};
+  return {title:'',rows:[]};
 }
 
 /* Tabela comparativa Atual vs. Proposto. */
@@ -1361,14 +1495,124 @@ function scenarioInfo(scenario){
   host.innerHTML=filterBanner()+unifiedDashboardHtml(scenario,metricSet(scenario));
 }
 
-/* Painel único do modo Comparar (usa sempre as métricas do cenário proposto,
-   e a tabela lá dentro é que confronta os dois). */
+/* --- Modo Comparar --------------------------------------------------------
+   Cada bloco mostra os dois cenários: o proposto primeiro (azul) e o atual
+   depois (cinza). p e a são os metricSet do proposto e do atual. */
+const COORD_WINDOW=90;   // minutos mostrados na coordenação em escala real
+
+function scenarioKeyHtml(){return `<span class="scenarioKey"><span class="kProp"><i></i>Proposto</span><span class="kCur"><i></i>Atual</span></span>`}
+
+function compareKpisHtml(p,a){
+  const np=nextEvent(p.fs),na=nextEvent(a.fs);
+  const gp=upcomingLargestGap(p.fs,120),ga=upcomingLargestGap(a.fs,120);
+  const cur=txt=>`<em class="kpiCur">atual <b>${txt}</b></em>`;
+  const ev=e=>e?`${e.line} · ${fmt(e.time)}`:'—';
+  return `<div class="kpiGrid">`
+    +`<div class="kpiCard interactive compareKpi" data-action="active"><span class="kpiIcon">${svgIcon('bus')}</span><label>Veículos agora</label><strong>${p.active}</strong>${cur(a.active)}</div>`
+    +`<div class="kpiCard interactive compareKpi" data-action="next" ${np?`data-time="${np.time}"`:''}><span class="kpiIcon">${svgIcon('route')}</span><label>Próximo serviço</label><strong class="nextKpi">${ev(np)}</strong>${cur(ev(na))}</div>`
+    +`<div class="kpiCard interactive compareKpi" data-action="largest-gap" ${gp?`data-time="${gp.start}"`:''}><span class="kpiIcon">${svgIcon('clock')}</span><label>Maior intervalo próximo</label><strong>${gp?gp.gap+' min':'—'}</strong>${cur(ga?ga.gap+' min':'—')}</div>`
+    +`<div class="kpiCard interactive compareKpi" data-action="next60"><span class="kpiIcon">${svgIcon('bars')}</span><label>Serviços nos próximos 60 min</label><strong class="next60Count">${futureEvents(p.fs,60).length}</strong>${cur(futureEvents(a.fs,60).length)}</div>`
+    +`</div>`;
+}
+
+/* Detalhe com uma secção por cenário. O detalhe de um veículo continua a
+   ser único, porque o veículo pertence a um só cenário. */
+function detailPanelCompareHtml(p,a){
+  if(!detailSelection)return '';
+  if(detailSelection.type==='vehicle')return detailPanelHtml('proposed',p);
+  let title='';
+  const body=[['proposed',p,'Proposto'],['current',a,'Atual']].map(([s,m,label])=>{
+    const d=detailListRows(s,m);title=d.title;
+    return `<div class="detailGroup ${s}">${label}<span>${d.rows.length} ${d.rows.length===1?'ocorrência':'ocorrências'}</span></div>`
+      +(d.rows.length?d.rows.join(''):'<div class="detailEmpty">Sem ocorrências neste âmbito.</div>');
+  }).join('');
+  return detailPanelShell(title,body);
+}
+
+/* Posição horizontal (%) de um instante na janela [agora, agora+90 min],
+   com 2% de margem de cada lado para as pastilhas não serem cortadas. */
+function coordX(t){return 2+96*(t-currentMinute)/COORD_WINDOW}
+function coordTicks(){
+  const out=[];
+  for(let t=Math.ceil((currentMinute+1)/15)*15;t<=currentMinute+COORD_WINDOW;t+=15)out.push(t);
+  return out;
+}
+
+/* Uma faixa temporal de um sentido. O troço entre duas passagens é colorido
+   pela qualidade do intervalo (gapClass). Passagens a menos de 5 minutos
+   alternam de nível, para as pastilhas e as horas não se sobreporem. */
+function scaledTrackHtml(title,events){
+  const win=events.filter(e=>e.time>=currentMinute-.01&&e.time<=currentMinute+COORD_WINDOW);
+  let body=coordTicks().map(t=>`<i class="tLine" style="left:${coordX(t)}%"></i>`).join('')+'<i class="rail"></i>';
+  let level=0,maxGap=null;
+  win.forEach((e,i)=>{
+    const prev=win[i-1];
+    if(prev){
+      const g=e.time-prev.time,x1=coordX(prev.time),x2=coordX(e.time);
+      maxGap=Math.max(maxGap??0,g);
+      body+=`<span class="cSeg ${gapClass(g)}" style="left:${x1}%;width:${x2-x1}%"></span>`;
+      if(g>=6)body+=`<span class="cGap ${gapClass(g)}" style="left:${(x1+x2)/2}%">${g} min</span>`;
+      level=g<5?1-level:0;
+    }
+    body+=`<div class="cEv lvl${level}" data-action="service" data-time="${e.time}" style="left:${coordX(e.time)}%;--line-color:${DATA.meta[e.line].color}" title="Linha ${e.line} · ${fmt(e.time)} · ${e.vehicle}"><span class="coordLine">${e.line}</span><span class="coordDot" aria-hidden="true"></span><time>${fmt(e.time)}</time></div>`;
+  });
+  if(!win.length)body+=`<div class="cEmpty">Sem passagens nos próximos ${COORD_WINDOW} minutos</div>`;
+  const summary=`${win.length} passage${win.length===1?'m':'ns'}${maxGap!=null?` · maior intervalo ${maxGap} min`:''}`;
+  return `<div class="cTrack"><div class="cTrackHead"><span>${title}</span><span>${summary}</span></div><div class="cTimeline">${body}</div></div>`;
+}
+
+function scenarioBlockHtml(scenario,m){
+  return `<div class="scenarioBlock ${scenario}"><span class="scenarioTag">${scenario==='proposed'?'Proposto':'Atual'}</span>`
+    +scaledTrackHtml(m.fs.aTitle,m.fs.a)
+    +(m.fs.bTitle?scaledTrackHtml(m.fs.bTitle,m.fs.b):'')
+    +`</div>`;
+}
+
+function coordinationCompareHtml(p,a){
+  const gapKey=`<span class="gapKey"><span><i style="background:#5cc49b"></i>15–20 min</span><span><i style="background:#f0b94f"></i>10–14 / 21–30</span><span><i style="background:#ec6b61"></i>≤5 ou &gt;30</span></span>`;
+  const axis=`<div class="cAxis">${coordTicks().map(t=>`<span style="left:${coordX(t)}%">${fmt(t)}</span>`).join('')}</div>`;
+  return `<div class="panelHead"><div class="cardTitle iconTitle"><span class="circleIcon">${svgIcon('wave')}</span>Coordenação dos próximos serviços</div><span class="linkText">${fmt(currentMinute)} → ${fmt(currentMinute+COORD_WINDOW)}</span></div>`
+    +`<div class="coordIntro"><span>Próximos ${COORD_WINDOW} minutos em escala real: a mesma hora fica na mesma posição nos dois cenários.</span>${gapKey}</div>`
+    +`<div class="coordScroll"><div class="coordScale">${axis}${scenarioBlockHtml('proposed',p)}${scenarioBlockHtml('current',a)}</div></div>`;
+}
+
+function hourlyCompareHtml(pfs,afs){
+  const p=hourCounts(pfs),a=hourCounts(afs);
+  const mx=Math.max(1,...Object.values(p),...Object.values(a)),sel=Math.floor(currentMinute/60);
+  const h100=n=>Math.max(3,100*n/mx);
+  return `<div class="hourBars">${Object.keys(p).map(h=>{
+      const hh=String(h).padStart(2,'0');
+      return `<div class="hourCol pair ${+h===sel?'selected':''}" data-action="hour" data-hour="${h}" title="${hh}:00 · proposto ${p[h]} · atual ${a[h]} passagens"><div class="bars"><i class="hp" style="height:${h100(p[h])}%"></i><i class="hc" style="height:${h100(a[h])}%"></i></div><span>${hh}</span></div>`;
+    }).join('')}</div>`
+    +`<div class="clickExplain">Seleciona uma hora para mover imediatamente o relógio e os mapas para esse período.</div>`;
+}
+
+function distributionCompareHtml(pg,ag){
+  const vals=GAP_BINS.map(k=>({k,l:binKeyLabel(k),p:pg.filter(g=>binPredicate(k,g)).length,a:ag.filter(g=>binPredicate(k,g)).length}));
+  const mx=Math.max(1,...vals.map(v=>Math.max(v.p,v.a)));
+  const h100=n=>Math.max(3,100*n/mx);
+  return `<div class="miniBars">${vals.map(v=>`<div class="barCol pair ${v.k==='15-20'?'targetBin':''} ${detailSelection?.type==='bin'&&detailSelection.bin===v.k?'selected':''}" data-action="bin" data-bin="${v.k}" data-scenario="compare" title="Intervalos ${v.l} min · proposto ${v.p} · atual ${v.a}"><span><b class="np">${v.p}</b><b class="nc">${v.a}</b></span><div class="barTrack pair"><i class="barFill p" style="height:${h100(v.p)}%"></i><i class="barFill c" style="height:${h100(v.a)}%"></i></div><small>${v.l}</small></div>`).join('')}</div>`;
+}
+
+function compareDashboardHtml(p,a){
+  return `<div class="dashHeader"><div class="cardTitle iconTitle"><span class="titleIcon">${svgIcon('bars')}</span>Indicadores da rede <small>(proposto vs. atual)</small></div><div class="dashHeaderRight">${scenarioKeyHtml()}<span class="ghostPill">${p.fs.label}</span></div></div>`
+    +compareKpisHtml(p,a)
+    +detailPanelCompareHtml(p,a)
+    +`<section class="panelCard coordPanel coordNew coordCompare dashboardSection">${coordinationCompareHtml(p,a)}</section>`
+    +`<div class="analysisGrid">`
+      +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('bars')}</span>Passagens por hora</div>${scenarioKeyHtml()}</div>${hourlyCompareHtml(p.fs,a.fs)}</section>`
+      +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('wave')}</span>Distribuição dos intervalos</div>${scenarioKeyHtml()}</div>${distributionCompareHtml(p.g,a.g)}</section>`
+    +`</div>`
+    +comparisonCompactHtml();
+}
+
+/* Painel único do modo Comparar. */
 function renderCompareSummary(){
   const el=document.getElementById('comparisonPanel');
   if(!el)return;
   if(mode!=='compare'){el.classList.add('hidden');return}
   el.classList.remove('hidden');
-  el.innerHTML=filterBanner()+unifiedDashboardHtml('proposed',metricSet('proposed'));
+  el.innerHTML=filterBanner()+compareDashboardHtml(metricSet('proposed'),metricSet('current'));
 }
 
 
@@ -1515,9 +1759,13 @@ function setMode(m){
   updateVisibleMaps(true);
   renderDerivedUI(true);
   // O Leaflet precisa de saber que o contentor mudou de tamanho.
+  // Um mapa que estava escondido no arranque ainda não foi enquadrado.
   setTimeout(()=>{
-    if(m!=='proposed')maps.current?.invalidateSize();
-    if(m!=='current')maps.proposed?.invalidateSize();
+    for(const s of ['current','proposed']){
+      if((s==='current'&&m==='proposed')||(s==='proposed'&&m==='current')||!maps[s])continue;
+      maps[s].invalidateSize();
+      if(mapNeedsFit[s])fitFocus(maps[s]);
+    }
     if(m==='compare'&&maps.current&&maps.proposed)maps.proposed.setView(maps.current.getCenter(),maps.current.getZoom(),{animate:false});
   },80);
 }
@@ -1559,7 +1807,8 @@ function wire(){
     drawRoutes('current');drawRoutes('proposed');
     drawPois('current');drawPois('proposed');
     updateAll();
-    setTimeout(()=>{if(mode!=='proposed')fitFocus(maps.current);if(mode!=='current')fitFocus(maps.proposed)},30);
+    // Um mapa escondido fica marcado como pendente e é enquadrado ao aparecer.
+    setTimeout(()=>{fitFocus(maps.current);fitFocus(maps.proposed)},30);
   });
   document.getElementById('timeInput').addEventListener('change',e=>{if(e.target.value){if(playing)play();setTime(tm(e.target.value))}});
   document.getElementById('timeRange').addEventListener('input',e=>{if(playing)play();setTime(+e.target.value)});
