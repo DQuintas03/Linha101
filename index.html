@@ -1839,8 +1839,9 @@ function unifiedDashboardHtml(scenario,m){
     +`<div class="analysisGrid">`
       +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('bars')}</span>Passagens por hora</div><span class="sectionAction">selecionar hora</span></div>${hourlyHtml(m.fs,scenario)}</section>`
       +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('wave')}</span>Distribuição dos intervalos</div><span class="sectionAction">explorar</span></div>${distributionHtml(m.g,scenario)}</section>`
-    +`</div>`
-    +comparisonCompactHtml();
+    +`</div>`;
+    // A tabela "Atual vs. Proposto" (comparisonCompactHtml) foi retirada da
+    // dashboard; a função fica disponível para a repor se for preciso.
 }
 
 /* Escreve a dashboard de um cenário no respetivo contentor. */
@@ -1963,8 +1964,8 @@ function compareDashboardHtml(p,a){
     +`<div class="analysisGrid">`
       +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('bars')}</span>Passagens por hora</div>${scenarioKeyHtml()}</div>${hourlyCompareHtml(p.fs,a.fs)}</section>`
       +`<section class="panelCard interactive"><div class="panelHead"><div class="cardTitle iconTitle"><span class="smallIcon">${svgIcon('wave')}</span>Distribuição dos intervalos</div>${scenarioKeyHtml()}</div>${distributionCompareHtml(p.g,a.g)}</section>`
-    +`</div>`
-    +comparisonCompactHtml();
+    +`</div>`;
+    // Tabela "Atual vs. Proposto" retirada (ver unifiedDashboardHtml).
 }
 
 /* Painel único do modo Comparar. */
