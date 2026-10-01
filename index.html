@@ -558,6 +558,24 @@ button,input,select{font:inherit}
 
 
 /* ============================================================================
+   11b · TELEMÓVEL — BARRA FIXA E DICA DO MAPA
+   Só aparecem em ecrãs até 760 px (ver o fim da secção 12). A barra desce
+   do topo quando o deck de controlos sai do ecrã, com a hora e o play/pausa.
+   ========================================================================== */
+.mobileBar{display:none;position:fixed;z-index:1200;left:0;right:0;top:0;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;background:rgba(4,124,180,.97);color:#fff;box-shadow:0 4px 14px rgba(0,40,70,.25);transform:translateY(-110%);transition:transform .22s ease}
+.mobileBar.show{transform:translateY(0)}
+.mobileBar .mbInfo{display:flex;flex-direction:column;margin-right:auto;line-height:1.1}
+.mobileBar .mbMode{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.mobileBar .mbTime{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.mobileBar .mbPlay{width:46px;height:46px;border:0;border-radius:12px;background:#fff;color:#047cb4;display:grid;place-items:center;cursor:pointer}
+.mobileBar .mbPlay svg{width:20px;height:20px;fill:currentColor}
+/* Dica mostrada quando se arrasta o mapa com um só dedo */
+.mapGestureHint{position:absolute;z-index:900;inset:0;display:grid;place-items:center;padding:20px;background:rgba(8,40,60,.45);color:#fff;font-size:15px;font-weight:800;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.mapGestureHint.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.mobileBar,.mapGestureHint{transition:none}}
+
+
+/* ============================================================================
    12 · RESPONSIVO — todos os pontos de rutura reunidos, do maior para o menor
    ========================================================================== */
 @media(max-width:1200px){
@@ -589,6 +607,122 @@ button,input,select{font:inherit}
   .kpiGrid{grid-template-columns:1fr 1fr}
   .corrGrid,.compareFull .corrGrid{grid-template-columns:1fr}
   .map{height:440px}
+
+  /* --- Telemóvel ----------------------------------------------------------
+     Tudo o que está daqui para baixo só se aplica a ecrãs até 760 px: num
+     computador estas regras são ignoradas e o site fica igual.
+     Objetivos: nada mais largo do que o ecrã, letra legível (mínimo ~10 px),
+     alvos de toque com 44 px e mapas à medida do ecrã. */
+  html,body{overflow-x:hidden}
+  .app{padding:10px 10px 8px}
+
+  /* Deck de controlos numa só coluna, pela ordem de uso:
+     cenário, hora, reprodução, velocidade, linhas e, por fim, o foco. */
+  .controlDeck{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px;border-radius:14px}
+  .controlDeck>.field:nth-child(1){order:1}
+  .controlDeck>.field:nth-child(3){order:2}
+  .controlDeck>.field:nth-child(4){order:3}
+  .controlDeck>.field:nth-child(5){order:4}
+  .controlDeck>.field:nth-child(6){order:5}
+  .controlDeck>.field:nth-child(2){order:6}
+  .field>label{font-size:11px}
+  /* 16 px evita que o iPhone faça zoom ao tocar no campo */
+  .field select,.field input[type=time]{height:44px;font-size:16px}
+  .seg button{padding:12px 6px;font-size:14px}
+  .buttonRow .btn{flex:1;height:44px}
+  .btn.step{white-space:nowrap;font-size:13px}
+  .speed .btn{height:44px;font-size:14px}
+  .lineControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .lineSwitch{min-width:0;height:44px;padding:0 12px}
+  .lineSwitch b{font-size:15px}
+
+  .simSlider{margin:12px 0 0;padding:0;grid-template-columns:38px 1fr 38px}
+  .simSlider>span{font-size:10px}
+  .sliderRail,.sliderRail input{height:44px}
+
+  /* Mapas */
+  .workspace{margin-top:12px;gap:12px}
+  .mapHead{height:auto;padding:12px 14px;gap:10px;flex-wrap:wrap}
+  .mapHeadTitle{flex:1 1 180px;min-width:0}
+  .mapHead p{font-size:12px}
+  .mapStats{min-width:0}
+  .mapStats b{font-size:13px}
+  .mapStats small{font-size:11px}
+  .cEv .coordLine{font-size:11px}
+  .cEv .coordLine small{font-size:10px}
+  .map,.maps.compare .mapCard .map,.workspace.compareMode .maps.compare .mapCard .map{height:62vh;min-height:320px;max-height:460px}
+  /* Legenda compacta numa linha, para não tapar o mapa */
+  .mapLegend{left:8px;bottom:8px;width:auto;max-width:calc(100% - 150px);padding:5px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}
+  .mapLegend strong{display:none}
+  .mapLegend div{display:flex;align-items:center;gap:5px;margin:0;padding:4px;font-size:12px}
+  .mapLegend div span{display:none}
+  .fitBtn{right:8px;bottom:8px;padding:9px 10px;font-size:12px}
+  .basemapToggle{font-size:12px;padding:9px 11px}
+  .basemapOption{font-size:14px;padding:10px}
+  .popupGrid{font-size:12px}
+
+  /* Dashboard: letra e alvos de toque maiores. A grelha não pode crescer
+     para lá do ecrã por causa da linha temporal (que desliza por dentro). */
+  .infoGrid{grid-template-columns:minmax(0,1fr)}
+  .dashCard,.compareFull{padding:12px}
+  .dashHeader,.dashHeaderRight,.compareCompactHead{flex-wrap:wrap;gap:8px}
+  .cardTitle{font-size:16px}
+  .cardTitle small{font-size:12px}
+  .ghostPill,.linkText,.sectionAction,.scenarioKey{font-size:11px}
+  .kpiCard{min-height:0;padding:12px}
+  .kpiCard label{font-size:10.5px}
+  .kpiCard strong{font-size:26px}
+  .kpiCard strong.nextKpi{font-size:18px}
+  .kpiCard em,.kpiCard .clickHint,.compareKpi .kpiCur{font-size:11px}
+  .filterBanner{font-size:12px}
+  .filterBanner button,.detailHead button{width:36px;height:36px;font-size:16px}
+  .detailHead strong{font-size:12px}
+  .detailBody{max-height:320px}
+  .detailRow{grid-template-columns:44px 1fr auto;padding:10px;font-size:12px}
+  .detailRow b{font-size:13px}
+  .detailEmpty,.detailGroup{font-size:12px}
+  .coordGap{font-size:12px}
+
+  .corrHead>div:first-child b{font-size:13px}
+  .corrHead>div:first-child span,.corrFacts,.corrCur,.corrNote{font-size:11.5px}
+  .corrFoot{grid-template-columns:1fr}
+  .corrFoot p{font-size:12px}
+  .hsGap{font-size:10.5px}
+  .hsDot time{font-size:11.5px}
+
+  .coordNew.dashboardSection{padding:0 10px 12px}
+  .coordNew .coordIntro,.coordCompare .coordIntro{font-size:11px}
+  .coordDirection{padding:10px}
+  .coordDirectionTitle{flex-wrap:wrap;font-size:11.5px}
+  .coordDirectionTitle span:last-child{font-size:10.5px}
+  .coordTimeline .coordEvent{flex-basis:70px}
+  .coordTimeline .coordLine{height:20px;font-size:11px}
+  .coordTimeline .coordEvent time{font-size:11px}
+  .coordTimeline .coordGapPlain{font-size:10px}
+  .coordTimeline .coordGapPlain b{font-size:11px}
+  .coordTimeline .coordVia{font-size:10px}
+  /* A coordenação em escala real (Comparar) mantém a largura mínima e
+     desliza para o lado; a indicação só aparece no telemóvel. */
+  .coordCompare .coordIntro::after{content:"Deslize para o lado para ver os 90 minutos →";display:block;margin-top:4px;color:#087ca5;font-weight:800}
+  .cTrackHead{flex-wrap:wrap;font-size:12px}
+  .cTrackHead span:last-child{font-size:11px}
+
+  .hourBars{height:140px}
+  .hourCol span{font-size:9px}
+  .clickExplain{font-size:11px}
+  .miniBars{height:150px}
+  .barCol>span,.barCol.pair>span{font-size:11px}
+  .barCol small{font-size:10.5px}
+
+  .compareCompact{padding:12px;overflow-x:auto}
+  .compareCompactHead p{font-size:11px}
+  .compareTable{font-size:12px}
+  .compareTable th{font-size:10px}
+
+  .footerBar{height:auto;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 0;font-size:11px}
+  .footerBar>div{flex-wrap:wrap}
+
+  .mobileBar{display:flex}
 }
 </style>
 </head>
@@ -636,6 +770,13 @@ button,input,select{font:inherit}
     </div>
   </div>
 </header>
+
+<!-- Barra fixa do telemóvel (escondida em ecrãs maiores). Preenchida por
+     updateTimeChrome(), renderPlayButton() e setMode(). -->
+<div class="mobileBar" id="mobileBar">
+  <div class="mbInfo"><span class="mbMode" id="mbMode">Proposto</span><span class="mbTime" id="mbTime">08:20</span></div>
+  <button type="button" class="mbPlay" id="mbPlay" aria-label="Reproduzir"></button>
+</div>
 
 <main class="app">
 
@@ -1899,6 +2040,8 @@ function updateTimeChrome(){
   if(range){range.value=currentMinute;range.style.setProperty('--p',pct+'%')}
   const sliderBus=document.getElementById('sliderBus');
   if(sliderBus)sliderBus.style.setProperty('--bus-x',pct+'%');
+  const mbTime=document.getElementById('mbTime');
+  if(mbTime)mbTime.textContent=fmt(currentMinute);
 }
 
 function updateLegendSelection(){
@@ -1951,6 +2094,9 @@ function renderPlayButton(){
   b.innerHTML=playing?PAUSE_ICON:PLAY_ICON;
   b.title=playing?'Pausar':'Reproduzir';
   b.setAttribute('aria-label',b.title);
+  // Botão equivalente na barra fixa do telemóvel.
+  const mb=document.getElementById('mbPlay');
+  if(mb){mb.innerHTML=b.innerHTML;mb.setAttribute('aria-label',b.title)}
 }
 
 function play(){
@@ -1982,6 +2128,8 @@ function tick(now=performance.now()){
 /* Troca de cenário (Atual / Proposto / Comparar). */
 function setMode(m){
   mode=m;
+  const mbMode=document.getElementById('mbMode');
+  if(mbMode)mbMode.textContent={current:'Atual',proposed:'Proposto',compare:'Comparar'}[m];
   document.querySelectorAll('#modeButtons button').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
   document.getElementById('mapsWrap').classList.toggle('compare',m==='compare');
   document.querySelector('.workspace')?.classList.toggle('compareMode',m==='compare');
@@ -2141,6 +2289,41 @@ function wire(){
   });
 
   updateRealClock();setInterval(updateRealClock,30000);
+
+  // --- Barra fixa do telemóvel: aparece quando o deck de controlos sai do
+  //     ecrã. Em ecrãs maiores a barra está escondida pelo CSS. ---
+  const bar=document.getElementById('mobileBar');
+  document.getElementById('mbPlay').addEventListener('click',play);
+  // A barra aparece logo que o deck fica quase todo acima do ecrã (a menos
+  // de 90 px do topo), e não só quando sai por completo.
+  const deck=document.querySelector('.controlDeck');
+  const syncBar=()=>bar.classList.toggle('show',deck.getBoundingClientRect().bottom<90);
+  window.addEventListener('scroll',syncBar,{passive:true});
+  window.addEventListener('resize',syncBar);
+  syncBar();
+}
+
+/* --- Gestos do mapa no telemóvel ---------------------------------------------
+   Um dedo desce a página; dois dedos movem e aproximam o mapa. Com o arrasto
+   desligado, o Leaflet aplica touch-action "pan-x pan-y" ao mapa: o browser
+   trata o deslizar com um dedo (scroll da página) e o gesto de dois dedos
+   continua a ser tratado pelo zoom tátil do Leaflet, que também desloca. */
+const mobileQuery=window.matchMedia('(max-width:760px) and (pointer:coarse)');
+function applyMobileMapGestures(){
+  for(const s of ['current','proposed']){
+    const m=maps[s];if(!m)continue;
+    if(mobileQuery.matches)m.dragging.disable();else m.dragging.enable();
+  }
+}
+function addMapGestureHint(map){
+  const hint=L.DomUtil.create('div','mapGestureHint',map.getContainer());
+  hint.textContent='Use dois dedos para mover o mapa';
+  let t=null;
+  map.getContainer().addEventListener('touchmove',e=>{
+    if(!mobileQuery.matches)return;
+    if(e.touches.length===1){hint.classList.add('show');clearTimeout(t);t=setTimeout(()=>hint.classList.remove('show'),1200)}
+    else hint.classList.remove('show');
+  },{passive:true});
 }
 
 function boot(){
@@ -2156,6 +2339,9 @@ function boot(){
     return;
   }
   initMap('mapCurrent','current');initMap('mapProposed','proposed');
+  if(mobileQuery.matches){addMapGestureHint(maps.current);addMapGestureHint(maps.proposed)}
+  applyMobileMapGestures();
+  mobileQuery.addEventListener?.('change',applyMobileMapGestures);
   updateAll(true);
 }
 window.addEventListener('load',boot);
